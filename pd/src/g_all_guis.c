@@ -1278,7 +1278,7 @@ void iemgui_draw_io(t_iemgui *x, int old_sr_flags)
 
     int x1,y1,x2,y2;
     c->c_wb->w_getrectfn((t_gobj *)x,canvas,&x1,&y1,&x2,&y2);
-    //iemgui_getrect_draw(x, &x1, &y1, &x2, &y2); 
+    //iemgui_getrect_draw(x, &x1, &y1, &x2, &y2);
 
     int i, n = c==vu_class ? 2 : 1, k=(x2-x1)-IOWIDTH;
     /* cnv has no inlets */

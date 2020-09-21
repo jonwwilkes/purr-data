@@ -4862,7 +4862,9 @@ function gui_mknob_new(cid, tag, x, y, is_toplevel, show_in, show_out,
     gui(cid).get_gobj(tag)
     .append(function(frag) {
         var border = create_item(cid, "path", {
-            class: "border" // now we can inherit the css border styles
+            // now we can inherit the css border styles
+            class: (!!is_footils_knob ? "flatgui knob " : "") + 
+                (!!is_toplevel ? "toplevel " : "") + "border"
         }),
         circle = create_item(cid, "circle", {
             //class: "circle"
@@ -4895,7 +4897,7 @@ function knob_offset(d) {
 function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
     is_footils_knob) {
     var w = size,
-        h = !!is_footils_knob ? size + 5 : size;
+        h = size;
     var g = gui(cid).get_gobj(tag)
     .q(".border", {
         d: ["M", 0, 0, w, 0,
@@ -4908,7 +4910,7 @@ function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
     .q("circle", {
         cx: size / 2,
         cy: size / 2,
-        r: size / 2,
+        r: size / 2 - (!!is_footils_knob ? 1 : 0),
         fill: !!is_footils_knob ? "none" : bg_color,
         stroke: "black",
         "stroke-width": !!is_footils_knob ? 3 : 1,
@@ -4925,7 +4927,7 @@ function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
         g.q(".dial_frag", {
             cx: size / 2,
             cy: size / 2,
-            r: size / 2,
+            r: size / 2 - (!!is_footils_knob ? 1 : 0),
             fill: "none",
             stroke: bg_color,
             "stroke-width": 3,

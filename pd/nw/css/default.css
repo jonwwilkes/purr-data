@@ -361,6 +361,17 @@ text.activated {
     fill: #eee;
 }
 
+/* flatgui knob border */
+.flatgui.knob.border {
+    stroke: none;
+    fill: none;
+}
+
+.flatgui.knob.border {
+    stroke: none;
+    fill: none;
+}
+
 /* for dropdown box we want to visually distinguish boxes that output
    the index from boxes that output the value. For now we do that by
    stroking the arrow for boxes that output an index. For boxes that
@@ -471,7 +482,7 @@ text.activated {
    
    ico@vt.edu added selection highlight only if we are in editmode
 */
-#patchsvg.editmode :not(.gop).selected .border {
+#patchsvg.editmode .selected .toplevel.border {
     stroke: #e87216;
     display: inline;
 }
