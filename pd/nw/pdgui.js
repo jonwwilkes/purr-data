@@ -4866,8 +4866,8 @@ function gui_mknob_new(cid, tag, x, y, is_toplevel, show_in, show_out,
             class: (!!is_footils_knob ? "flatgui knob " : "") + 
                 (!!is_toplevel ? "toplevel " : "") + "border"
         }),
-        circle = create_item(cid, "circle", {
-            //class: "circle"
+        circle = create_item(cid, (!!is_footils_knob ? "path" : "circle"), {
+                class: (!!is_footils_knob ? "circle" : "")
         }),
         line = create_item(cid, "line", {
             //class: "dial"
@@ -4876,8 +4876,8 @@ function gui_mknob_new(cid, tag, x, y, is_toplevel, show_in, show_out,
         frag.appendChild(circle);
         /* An extra circle for footils/knob */
         if (!!is_footils_knob) {
-            frag.appendChild(create_item(cid, "circle", {
-                class: "dial_frag"
+            frag.appendChild(create_item(cid, "path", {
+                class: "dial_frag " + tag + "dial_frag"
             }));
         }
         frag.appendChild(line);
@@ -4891,7 +4891,33 @@ function knob_dashes(d, len) {
 }
 
 function knob_offset(d) {
-    return d * 3.14 * -0.28;
+    return d * 3.14159 * -0.277;
+}
+
+// ico@vt.edu 20200923: improved drawing of the flatgui/knob
+// code adapted from https://jsbin.com/fiqulevevu/edit?html,js,output
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+  var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+  return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+
+function describeArc(x, y, radius, startAngle, endAngle){
+
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+    var d = [
+        "M", start.x, start.y, 
+        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+    ].join(" ");
+
+    return d;       
 }
 
 function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
@@ -4907,33 +4933,42 @@ function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
            ].join(" "),
         fill: "none",
     })
-    .q("circle", {
-        cx: size / 2,
-        cy: size / 2,
-        r: size / 2 - (!!is_footils_knob ? 1 : 0),
-        fill: !!is_footils_knob ? "none" : bg_color,
-        stroke: "black",
-        "stroke-width": !!is_footils_knob ? 3 : 1,
-        "stroke-dasharray": !!is_footils_knob ?
-            knob_dashes(size, 0.94) : "none",
-        "stroke-dashoffset": !!is_footils_knob ? knob_offset(size) : "0"
-    })
     .q("line", { // indicator
         "stroke-width": 2,
         stroke: fg_color
     });
 
-    if (!!is_footils_knob) {
-        g.q(".dial_frag", {
+    if (!is_footils_knob) {
+        g.q("circle", {
             cx: size / 2,
             cy: size / 2,
             r: size / 2 - (!!is_footils_knob ? 1 : 0),
+            fill: !!is_footils_knob ? "none" : bg_color,
+            stroke: "black",
+            "stroke-width": !!is_footils_knob ? 3 : 1,
+            "stroke-dasharray": !!is_footils_knob ?
+                knob_dashes(size, 0.933) : "none",
+            "stroke-dashoffset": !!is_footils_knob ? knob_offset(size) : "0"
+        });
+    } else {
+        g.q(".circle", {
+            stroke: "black",
+            fill: "none",
+            "stroke-width": 3,
+            "d": describeArc(size/2, size/2, size/2 - 1, 193, 527)
+        });
+        g.q(".dial_frag", {
+            //cx: size / 2,
+            //cy: size / 2,
+            r: size / 2 - 1,
             fill: "none",
             stroke: bg_color,
             "stroke-width": 3,
-            "stroke-dasharray": knob_dashes(size, 0.94),
-            "stroke-dashoffset": knob_offset(size)
+            //"stroke-dasharray": knob_dashes(size, 0.933),
+            //"stroke-dashoffset": knob_offset(size)
+            "d": describeArc(size/2, size/2, size/2 - 1, 193, 527),
         });
+        //gui(cid).get_gobj(tag).setAttribute('r', size/2);
     }
 }
 
@@ -4946,8 +4981,13 @@ function gui_turn_mknob(cid, tag, x1, y1, x2, y2, is_footils_knob, val) {
         y2: y2
     });
     if (!!is_footils_knob) {
+        var blah = g.q(".dial_frag");
+        var h = gui(cid).get_elem(tag + "gobjdial_frag");
+        var r = 44;//g.q(".dial_frag").getAttribute("r");
+        post("r="+ r +" " + h.getAttribute("r"));
         g.q(".dial_frag", {
-            "stroke-dasharray": knob_dashes(x1 * 2, val * 0.94)
+            "d": describeArc(r/2, r/2, r/2 - 1, 193, val * (527-193))
+            //"stroke-dasharray": knob_dashes(x1 * 2, val * 0.933)
         });
     }
 }
