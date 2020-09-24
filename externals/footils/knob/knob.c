@@ -68,7 +68,7 @@ static void knob_draw_update(t_knob *x, t_glist *glist)
 	//double normalized_value = (double)(((x->x_val)*0.01*x->x_k + x->x_min)
 	//	/ x->x_max);
     t_float normalized_value;
-    if(x->x_lin0_log1)
+    /*if(x->x_lin0_log1)
     {
         if (!x->x_gui.x_reverse && x->x_val == x->x_min)
             normalized_value = 0;
@@ -77,17 +77,19 @@ static void knob_draw_update(t_knob *x, t_glist *glist)
         else
             normalized_value = (t_float)(log(x->x_val - x->x_min + 1)/log(x->x_max - x->x_min));
     }
-    else
-        normalized_value = (t_float)((x->x_val-x->x_min)/(x->x_max - x->x_min));
+    else*/
+        normalized_value = (t_float)((x->x_pos-x->x_min)/(x->x_max - x->x_min));
+    post("draw_update");
         //t_float blah = normalized_value * exp(log(x->x_max/x->x_min)/(x->x_gui.x_h));
-
+    //post("draw_update val=%f norm_value=%f inverse_value=%f %f", x->x_val, normalized_value, 
+    //    1.0 - (log(x->x_max - x->x_val)/log(x->x_max - x->x_min)), exp(x->x_max - x->x_min));
     /*
 x->x_k = log(x->x_max/x->x_min)/(double)(w-1);
 x->x_min*exp(x->x_k*(double)(x->x_val)*0.01);
     */
 
 
-    post("knob_draw_update normalized_value=%f", normalized_value);
+    //post("knob_draw_update normalized_value=%f", normalized_value);
 	/* compute dial:*/ 
 	t_float radius = 0.5*(t_float)x->x_gui.x_h;
 	t_float angle = 2.0/9.0 + ((t_float)normalized_value * (2.0 * M_PI - (4.0/9.0)));
@@ -497,34 +499,40 @@ static void knob_motion(t_knob *x, t_floatarg dx, t_floatarg dy)
     int old = x->x_val;
     if (x->x_gui.x_reverse)
         dy = -dy;
-    post("x->x_val=%f", x->x_val);
     if(x->x_gui.x_finemoved)
-	   x->x_val -= dy * 0.01;
+	   x->x_pos -= dy * 0.01;
     else
-	   x->x_val -= dy;
-    //x->x_val = x->x_pos;
+	   x->x_pos -= dy;
+
     if (!x->x_gui.x_reverse)
     {
-        if(x->x_val > x->x_max)
+        if(x->x_pos > x->x_max)
         {
-        	x->x_val = x->x_max;
+            x->x_pos = x->x_max;
         }
-        if(x->x_val < x->x_min)
+        if(x->x_pos < x->x_min)
         {
-            x->x_val = x->x_min;
+            x->x_pos = x->x_min;
         }
     }
     else
     {
-        if(x->x_val < x->x_max)
+        if(x->x_pos < x->x_max)
         {
-            x->x_val = x->x_max;
+            x->x_pos = x->x_max;
         }
-        if(x->x_val > x->x_min)
+        if(x->x_pos > x->x_min)
         {
-            x->x_val = x->x_min;
+            x->x_pos = x->x_min;
         }        
     }
+
+    t_float norm_val = (x->x_pos - x->x_min) / (x->x_max - x->x_min);
+    //x->x_pos = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+    if (x->x_lin0_log1)
+        x->x_val = (1 - ((log(100 - (norm_val * 99)))) / 4.60517) * (x->x_max - x->x_min) + x->x_min;
+    else
+        x->x_val = x->x_pos;
     if(old != x->x_val)
     {
 	(*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
@@ -548,16 +556,35 @@ static void knob_click(t_knob *x, t_floatarg xpos, t_floatarg ypos,
         t_float norm_val = (angle - 14)/332;
         if (x->x_lin0_log1)
         {
-            post("click linlog norm_val=%f", norm_val);
+            //post("click linlog norm_val=%f || log=%f %f %f", norm_val*100.0, (exp(norm_val) - 1.0), (exp(1) - 1.0), ((exp(norm_val) - 1.0)/(exp(1) - 1.0) * (x->x_max - x->x_min)) + x->x_min,
+            //    0);//exp(x->x_val - x->x_min + 1)/exp(x->x_max - x->x_min));
+            x->x_pos = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+            x->x_val = (1 - ((log(100 - (norm_val * 99)))) / 4.60517) * (x->x_max - x->x_min);
+            post("aaargh pos=%f val=%f", x->x_pos, x->x_val);
             //norm_val = 0.5(x->x_val);
+            //norm_val = (1 - ((log(100 - (norm_val * 99)))) / 4.60517);
         }
-        x->x_val = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+        else
+        {
+            x->x_val = ((x->x_max - x->x_min) * norm_val) + x->x_min; // this is key (what do we make norm_val to get the right angle?)
+            x->x_pos = x->x_val;
+        }
     }
-    if(x->x_val > x->x_max)
-        x->x_val = x->x_max;
-    if(x->x_val < x->x_min)
-        x->x_val = x->x_min;
-    x->x_pos = x->x_val;
+    if (x->x_gui.x_reverse)
+    {
+        if(x->x_val < x->x_max)
+            x->x_val = x->x_max;
+        if(x->x_val > x->x_min)
+            x->x_val = x->x_min;
+    }
+    else
+    {
+        if(x->x_val > x->x_max)
+            x->x_val = x->x_max;
+        if(x->x_val < x->x_min)
+            x->x_val = x->x_min;
+    }
+    //x->x_pos = x->x_val;
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
     knob_bang(x);
     glist_grab(x->x_gui.x_glist, &x->x_gui.x_obj.te_g, (t_glistmotionfn)knob_motion,
@@ -583,7 +610,7 @@ static int knob_newclick(t_gobj *z, struct _glist *glist,
 
 static void knob_set(t_knob *x, t_floatarg f)
 {
-    double g;
+    //double g;
 
     if (x->x_gui.x_reverse)    /* bugfix */
     {
@@ -599,16 +626,26 @@ static void knob_set(t_knob *x, t_floatarg f)
         if (f < x->x_min)
             f = x->x_min;
     }
-    if (x->x_lin0_log1)
-        g = log(f/x->x_min);// /x->x_k;
-    else
-        g = (f - x->x_min);// / x->x_k;
-    //post("knob_set f: %f", f );
-    //post("knob_set g: %f", g );
     x->x_val = f;
-    // x->x_val = (int)(100.0*g);
-    x->x_pos = x->x_val;
-    //post("knob_set x_val: %f", x->x_val );
+    if (x->x_lin0_log1)
+    {
+        if (!x->x_gui.x_reverse && x->x_val == x->x_min)
+            x->x_pos = x->x_min;
+        else if (x->x_gui.x_reverse && x->x_val == x->x_max)
+            x->x_pos = x->x_max;
+        else
+            x->x_pos = (t_float)(log(x->x_val - x->x_min + 1)/log(x->x_max - x->x_min)) * (x->x_max - x->x_min) + x->x_min;
+        post("knob_set x->x_pos=%f", x->x_pos);
+    /*
+        t_float norm_val = (x->x_val - x->x_min) / (x->x_max - x->x_min);
+        x->x_pos = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+        x->x_val = (1 - ((log(100 - (norm_val * 99)))) / 4.60517) * (x->x_max - x->x_min) + x->x_min;
+    */
+    }
+    else
+    {
+        x->x_pos = x->x_val;
+    }
     if (glist_isvisible(x->x_gui.x_glist))
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
 }
@@ -789,6 +826,7 @@ static void knob__motionhook(t_scalehandle *sh,
         /* recalculate x_k and stuff */
         knob_check_height(x, height);
         knob_check_minmax(x, x->x_min, x->x_max);
+        knob_set(x, x->x_val);
 
         //complain_about_surprising_behavior(x);
 
