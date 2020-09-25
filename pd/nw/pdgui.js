@@ -4951,8 +4951,8 @@ function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
             "knob_w": size,
             fill: "none",
             stroke: bg_color,
-            "stroke-width": 3,
-            "d": describeArc(size/2, size/2, size/2 - 1, 193, 528),
+            "stroke-width": 4,
+            "d": describeArc(size/2, size/2, size/2 - 1, 192.9, 528.1),
         });
     }
 }
