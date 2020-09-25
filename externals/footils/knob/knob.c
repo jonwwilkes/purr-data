@@ -45,6 +45,8 @@
 
 #define IEM_KNOB_DEFAULTSIZE 32
 
+static log_warning = 0;
+
 /* ------------ knob gui-vertical  slider ----------------------- */
 
 t_widgetbehavior knob_widgetbehavior;
@@ -239,10 +241,11 @@ static void knob_properties(t_gobj *z, t_glist *owner)
        for the number of steps and re-label it on the GUI side. */
 //    gui_s("width");            gui_i(x->x_gui.x_w);
 //    gui_s("height");           gui_i(x->x_gui.x_h);
-    gui_s("size");           gui_i(x->x_gui.x_h);
+    gui_s("size");             gui_i(x->x_gui.x_h);
     gui_s("minimum_range");    gui_f(x->x_min);
     gui_s("maximum_range");    gui_f(x->x_max);
-    gui_s("log_scaling");      gui_i(x->x_lin0_log1);
+    /* spent 2 days trying to fix--life is too short */
+//    gui_s("log_scaling");      gui_i(x->x_lin0_log1);
     gui_s("init");             gui_i(x->x_gui.x_loadinit);
     gui_s("steady_on_click");   gui_i(x->x_steady);
     gui_s("send_symbol");      gui_s(srl[0]->s_name);
@@ -281,12 +284,12 @@ static void knob_dialog(t_knob *x, t_symbol *s, int argc, t_atom *argv)
     int h = (int)atom_getintarg(1, argc, argv);
     double min = (double)atom_getfloatarg(2, argc, argv);
     double max = (double)atom_getfloatarg(3, argc, argv);
-    int lilo = (int)atom_getintarg(4, argc, argv);
+    //int lilo = (int)atom_getintarg(4, argc, argv);
     int steady = (int)atom_getintarg(17, argc, argv);
     int sr_flags;
 
-    if(lilo != 0) lilo = 1;
-    x->x_lin0_log1 = lilo;
+    //if(lilo != 0) lilo = 1;
+    //x->x_lin0_log1 = lilo;
     if(steady)
        x->x_steady = 1;
     else
@@ -298,6 +301,7 @@ static void knob_dialog(t_knob *x, t_symbol *s, int argc, t_atom *argv)
     iemgui_draw_config(&x->x_gui);
     iemgui_draw_io(&x->x_gui, sr_flags);
     iemgui_io_draw_move(&x->x_gui);
+    scalehandle_draw(&x->x_gui);
     canvas_fixlinesfor(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -314,43 +318,67 @@ static void knob_motion(t_knob *x, t_floatarg dx, t_floatarg dy)
     if (!x->x_gui.x_reverse)
     {
         if(x->x_pos > x->x_max)
-        {
             x->x_pos = x->x_max;
-        }
         if(x->x_pos < x->x_min)
-        {
             x->x_pos = x->x_min;
-        }
     }
     else
     {
         if(x->x_pos < x->x_max)
-        {
             x->x_pos = x->x_max;
-        }
         if(x->x_pos > x->x_min)
-        {
-            x->x_pos = x->x_min;
-        }        
+            x->x_pos = x->x_min;        
     }
 
     t_float norm_val = (x->x_pos - x->x_min) / (x->x_max - x->x_min);
-    if (x->x_lin0_log1)
+    /*if (x->x_lin0_log1)
     {
-        // ico@vt.edu 2020-09-24: the following three lines represent 48 hours of my actual
-        // effort on this badly broken external... sad but true...
-        t_float max = exp((x->x_max * log(x->x_max - x->x_min))/(x->x_max - x->x_min)
-            - x->x_min) + x->x_min - 1.569453;
-        x->x_val = exp((x->x_pos * log(x->x_max - x->x_min))/(x->x_max - x->x_min) - x->x_min)
-            + x->x_min - 1.569453;
-        x->x_val = x->x_val / max * (x->x_max - x->x_min) + x->x_min;
+        t_float max;
+
+        if (!x->x_gui.x_reverse)
+        {
+            // ico@vt.edu 2020-09-24: giving up on this mess...
+            // if someone else wants to figure out how to get inverse value in a universal
+            // way please lemme know
+            max = exp((x->x_max * log(x->x_max - x->x_min))/(x->x_max - x->x_min)
+                - x->x_min) + x->x_min - 1;
+            x->x_val = exp((x->x_pos * log(x->x_max - x->x_min))/(x->x_max - x->x_min) - x->x_min)
+                + x->x_min - 1; //1.569453
+            post("x->x_pos=%f max=%f val=%f", x->x_pos, max, x->x_val);
+            x->x_val = x->x_val / max * (x->x_max - x->x_min) + x->x_min;
+        }
+        else
+        {
+            max = exp((x->x_max * log(abs(x->x_max - x->x_min)))/(x->x_max - x->x_min)
+                - x->x_min) + x->x_max - 1.569453 + 0.034129 + 0.00214;
+            x->x_val = exp((x->x_pos * log(abs(x->x_max - x->x_min)))/(x->x_max - x->x_min) - x->x_max)
+                + x->x_max - 1.569453 + 0.034129;
+            post("x->x_pos=%f max=%f val=%f", x->x_pos, max, x->x_val);
+            x->x_val = (x->x_val / max) * (abs(x->x_max - x->x_min)) + x->x_max;
+        }
+    }
+    else*/
+    x->x_val = x->x_pos;
+
+    if (!x->x_gui.x_reverse)
+    {
+        if(x->x_pos >= x->x_max)
+            x->x_val = x->x_max;
+        if(x->x_pos <= x->x_min)
+            x->x_val = x->x_min;
     }
     else
-        x->x_val = x->x_pos;
+    {
+        if(x->x_pos <= x->x_max)
+            x->x_val = x->x_max;
+        if(x->x_pos >= x->x_min)
+            x->x_val = x->x_min;       
+    }
+
     if(old != x->x_val)
     {
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
-    knob_bang(x);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+        knob_bang(x);
     }
 }
 
@@ -368,20 +396,22 @@ static void knob_click(t_knob *x, t_floatarg xpos, t_floatarg ypos,
         if (angle < 14) angle = 14;
         if (angle > 346) angle = 346;
         t_float norm_val = (angle - 14)/332;
-        if (x->x_lin0_log1)
+        /*if (x->x_lin0_log1)
         {
             x->x_pos = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+            t_float min = exp((x->x_min * log(x->x_max - x->x_min))/(x->x_max - x->x_min) - x->x_min)
+                + x->x_min - 1;
             t_float max = exp((x->x_max * log(x->x_max - x->x_min))/(x->x_max - x->x_min) - x->x_min)
-                + x->x_min - 1.569453;
+                + x->x_min - 1 - min;
             x->x_val = exp((x->x_pos * log(x->x_max - x->x_min))/(x->x_max - x->x_min) - x->x_min)
-                + x->x_min - 1.569453;
+                + x->x_min - 1 - min;
             x->x_val = x->x_val / max * (x->x_max - x->x_min) + x->x_min;
         }
         else
-        {
-            x->x_val = ((x->x_max - x->x_min) * norm_val) + x->x_min;
-            x->x_pos = x->x_val;
-        }
+        {*/
+        x->x_val = ((x->x_max - x->x_min) * norm_val) + x->x_min;
+        x->x_pos = x->x_val;
+        //}
     }
     if (x->x_gui.x_reverse)
     {
@@ -439,7 +469,7 @@ static void knob_set(t_knob *x, t_floatarg f)
             f = x->x_min;
     }
     x->x_val = f;
-    if (x->x_lin0_log1)
+    /*if (x->x_lin0_log1)
     {
         if (!x->x_gui.x_reverse && x->x_val == x->x_min)
             x->x_pos = x->x_min;
@@ -449,9 +479,9 @@ static void knob_set(t_knob *x, t_floatarg f)
             x->x_pos = (log(x->x_val - x->x_min + 1)/log(x->x_max - x->x_min)) * (x->x_max - x->x_min) + x->x_min;
     }
     else
-    {
-        x->x_pos = x->x_val;
-    }
+    {*/
+    x->x_pos = x->x_val;
+    //}
     if (glist_isvisible(x->x_gui.x_glist))
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
 }
@@ -519,13 +549,15 @@ static void knob_label_font(t_knob *x, t_symbol *s, int ac, t_atom *av)
 
 static void knob_log(t_knob *x)
 {
-    x->x_lin0_log1 = 1;
+    //x->x_lin0_log1 = 1;
+    error("knob: lin and log commands are not anymore supported. Ignoring...");
     knob_check_minmax(x, x->x_min, x->x_max);
 }
 
 static void knob_lin(t_knob *x)
 {
-    x->x_lin0_log1 = 0;
+    error("knob: lin and log commands are not anymore supported. Ignoring...");
+    //x->x_lin0_log1 = 0;
 }
 
 static void knob_init(t_knob *x, t_floatarg f)
@@ -548,24 +580,6 @@ static void knob_loadbang(t_knob *x, t_floatarg action)
     knob_bang(x);
     } 
 }
-
-/*
-static void knob_list(t_knob *x, t_symbol *s, int ac, t_atom *av)
-{
-    int l=iemgui_list((void *)x, &x->x_gui, s, ac, av);
-
-    if(l < 0)
-    {
-    if(IS_A_FLOAT(av,0))
-        knob_float(x, atom_getfloatarg(0, ac, av));
-    }
-    else if(l > 0)
-    {
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
-    canvas_fixlinesfor(x->x_gui.x_glist, (t_text*)x);
-    }
-}
-*/
 
 /* we may no longer need h_dragon... */
 static void knob__clickhook(t_scalehandle *sh, int newstate)
@@ -642,7 +656,7 @@ static void knob__motionhook(t_scalehandle *sh,
             // This should actually be "size", but we're using the
             // "width" input in dialog_iemgui and just relabelling it
             // as a kluge.
-            properties_set_field_int(properties, "width", new_w);
+            properties_set_field_int(properties, "size", new_w);
         }
     }
     scalehandle_dragon_label(sh, mouse_x, mouse_y);
@@ -653,7 +667,7 @@ static void *knob_new(t_symbol *s, int argc, t_atom *argv)
     t_knob *x = (t_knob *)pd_new(knob_class);
     int bflcol[]={-262144, -1, -1};
     int w=IEM_KNOB_DEFAULTSIZE, h=IEM_KNOB_DEFAULTSIZE;
-    int lilo=0, ldx=0, ldy=-8;
+    int lilo=0, ldx=-2, ldy=-8;
     int fs=8, v=0, steady=1;
     double min=0.0, max=(double)(IEM_SL_DEFAULTSIZE-1);
 
@@ -679,7 +693,7 @@ static void *knob_new(t_symbol *s, int argc, t_atom *argv)
         h = (int)atom_getintarg(1, argc, argv);
         min = (double)atom_getfloatarg(2, argc, argv);
         max = (double)atom_getfloatarg(3, argc, argv);
-        lilo = (int)atom_getintarg(4, argc, argv);
+        //lilo = (int)atom_getintarg(4, argc, argv);
         iem_inttosymargs(&x->x_gui, atom_getintarg(5, argc, argv));
         iemgui_new_getnames(&x->x_gui, 6, argv);
         ldx = (int)atom_getintarg(9, argc, argv);
@@ -697,6 +711,13 @@ static void *knob_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.x_fsf.x_snd_able = 1;
     x->x_gui.x_fsf.x_rcv_able = 1;
 */
+    if (!log_warning)
+    {
+        post("Please note this is a Purr-Data reimplementation of the flatgui/knob \
+            (a.k.a. footils knob) which does not support logarithmic scaling. All \
+            other features remain supported.");
+        log_warning = 1;
+    }
 
     x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
     if (x->x_gui.x_loadinit)

@@ -4913,7 +4913,6 @@ function describeArc(x, y, radius, startAngle, endAngle){
 
 function gui_configure_mknob(cid, tag, size, bg_color, fg_color,
     is_footils_knob) {
-    post("tagdial=" + tag + "dial");
     var w = size,
         h = size;
     var g = gui(cid).get_gobj(tag)
