@@ -9,10 +9,8 @@
 
 .build_all: &build_all
   - echo -e "section_start:`date +%s`:build_all\r\e[0KBuilding Purr Data"
-  - cd l2ork_addons
   - export V=0
-  - ./tar_em_up.sh $BUILD_TYPE_FLAG
-  - cd ..
+  - make GEM_MAKEFLAGS=-j2
   - echo -e "section_end:`date +%s`:build_all\r\e[0K"
 
 .test_linux: &test_linux
@@ -44,12 +42,10 @@ debian_stretch_x86_64_deb:
      - x86_64
    image:
      registry.gitlab.com/samthursfield/purr-data-oci-images/amd64/debian:stretch
-   variables:
-     BUILD_TYPE_FLAG: -B
    before_script:
      - *debian_image_preparation
    script:
-     - make GEM_MAKEFLAGS=-j2
+     - *build_all
      - *test_linux
    artifacts:
      name: "$CI_RUNNER_DESCRIPTION"
@@ -62,8 +58,6 @@ ubuntu_16.04_x86_64_deb:
      - ubuntu
      - v16.04
      - x86_64
-   variables:
-     BUILD_TYPE_FLAG: -B
    before_script:
      - *debian_image_preparation
    script:
@@ -80,8 +74,6 @@ osx_10.11_x86_64_dmg:
      - osx
      - v10.11
      - dmg
-   variables:
-     BUILD_TYPE_FLAG: -X
    script:
      - echo `pwd`
      - *build_all
@@ -98,7 +90,7 @@ osx_10.8_x86_64_dmg:
      - v10.8
      - dmg
    variables:
-     BUILD_TYPE_FLAG: -X
+     osx_version: 10.8
    script:
      - echo `pwd`
      - *build_all
@@ -113,8 +105,6 @@ windows_i386_innosetup:
   tags:
     - windows
     - i386
-  variables:
-    BUILD_TYPE_FLAG: -Z
   script:
     - echo `pwd`
     - *build_all
@@ -130,8 +120,6 @@ raspbian_stretch_armv7l_deb:
      - raspbian
      - arm 
      - stretch
-   variables:
-     BUILD_TYPE_FLAG: -r
    before_script:
      - *debian_image_preparation
    script:
