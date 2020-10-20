@@ -49,7 +49,7 @@ debian_stretch_x86_64_deb:
    before_script:
      - *debian_image_preparation
    script:
-     - *build_all
+     - make GEM_MAKEFLAGS=-j2
      - *test_linux
    artifacts:
      name: "$CI_RUNNER_DESCRIPTION"
