@@ -42,6 +42,8 @@ debian_stretch_x86_64_deb:
      - debian
      - stretch
      - x86_64
+   image:
+     registry.gitlab.com/samthursfield/purr-data-oci-images/amd64/debian:stretch
    variables:
      BUILD_TYPE_FLAG: -B
    before_script:
