@@ -89,8 +89,6 @@ osx_10.8_x86_64_dmg:
      - osx
      - v10.8
      - dmg
-   variables:
-     osx_version: 10.8
    script:
      - echo `pwd`
      - *build_all
