@@ -686,45 +686,67 @@ static void argerror(void *obj, const char *fmt, ...)
     pd_error(obj, "%s: %s", classname, msg);
 }
 
-static int verify_flag(void *obj, char *flag)
+static int flag_is_missing_floatarg(void *obj, char *flag, int argc,
+    t_atom *argv)
 {
-    if (!flag)
-    {
-        argerror(obj, "empty symbol detected");
-        return 0;
-    }
-    if (flag[0] != '-')
-    {
-        argerror(obj, "expected '-%s' flag but got '%s'", flag, flag);
-        return 0;
-    }
-    return 1;
-}
-
-static int flag_and_floatarg(void *obj, char *flag, int argc, t_atom *argv)
-{
-    if (!verify_flag(obj, flag))
-        return 0;
+        /* First check if we have an arg at all. If not, error out. */
     if (argc < 2)
     {
-        argerror(obj, "need a float argument for '-%s' flag", flag);
-        return 0;
+        argerror(obj, "'%s' flag expects a float argument", flag);
+        return 1;
     }
     if (argv[1].a_type != A_FLOAT)
     {
-        argerror(obj, "'-%s' flag expects float but got '%s'",
+        argerror(obj, "'%s' flag expects a float but got '%s'",
            flag,
            argv[1].a_type == A_SYMBOL ?
            argv[1].a_w.w_symbol->s_name :
            "unexpected arg type");
-        return 0;
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
-static int matchstring(char *str, char *flag)
+static int flag_has_unexpected_floatarg(void *obj, char *flag, int argc,
+    t_atom *argv)
 {
-    return (!strcmp(str, flag) || !strcmp(str+1, flag));
+    if (argc < 2) return 0;
+    if (argv[1].a_type == A_FLOAT)
+    {
+        argerror(obj, "'%s' flag does not accept a float argument", flag);
+        return 1;
+    }
+    return 0;
+}
+
+    /* catch filenames that are flags, with and without pre-fixed '-' */
+static int file_is_a_flag_name(t_symbol *sym, int *nodash)
+{
+    char *s = sym->s_name;
+    if (s[0] == '-')
+    {
+        s++;
+        *nodash = 1;
+    }
+    else
+        *nodash = 0;
+
+    if (!strcmp(s, "skip")
+        || !strcmp(s, "nframes")
+        || !strcmp(s, "bytes")
+        || !strcmp(s, "normalize")
+        || !strcmp(s, "wave")
+        || !strcmp(s, "nextstep")
+        || !strcmp(s, "aiff")
+        || !strcmp(s, "big")
+        || !strcmp(s, "little")
+        || !strcmp(s, "r")
+        || !strcmp(s, "rate"))
+    {
+        return 1;
+    }
+    else
+        return 0;
 }
 
     /* the routine which actually does the work should LATER also be called
@@ -747,12 +769,12 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
     t_symbol *filesym;
     t_float rate = -1;
     
-    while (argc > 0 && argv->a_type == A_SYMBOL)
+    while (argc > 0 && atom_getsymbol(argv)->s_name[0] == '-')
     {
         char *flag = argv->a_w.w_symbol->s_name;
-        if (matchstring(flag, "skip"))
+        if (!strcmp(flag, "-skip"))
         {
-            if (!flag_and_floatarg(obj, flag, argc, argv))
+            if (flag_is_missing_floatarg(obj, flag, argc, argv))
                 goto usage;
             if ((onset = argv[1].a_w.w_float) < 0)
             {
@@ -761,9 +783,9 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
             }
             argc -= 2; argv += 2;
         }
-        else if (matchstring(flag, "nframes"))
+        else if (!strcmp(flag, "-nframes"))
         {
-            if (!flag_and_floatarg(obj, flag, argc, argv))
+            if (flag_is_missing_floatarg(obj, flag, argc, argv))
                 goto usage;
             if ((nframes = argv[1].a_w.w_float) < 0)
             {
@@ -773,9 +795,9 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
             }
             argc -= 2; argv += 2;
         }
-        else if (matchstring(flag, "bytes"))
+        else if (!strcmp(flag, "-bytes"))
         {
-            if (!flag_and_floatarg(obj, flag, argc, argv))
+            if (flag_is_missing_floatarg(obj, flag, argc, argv))
                 goto usage;
             if ((bytespersamp = argv[1].a_w.w_float) < 2 ||
                    bytespersamp > 4)
@@ -786,52 +808,51 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
             }
             argc -= 2; argv += 2;
         }
-        else if (matchstring(flag, "normalize"))
+        else if (!strcmp(flag, "-normalize"))
         {
-            if (!verify_flag(obj, flag))
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
                 goto usage;
             normalize = 1;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "wave"))
+        else if (!strcmp(flag, "-wave"))
         {
-            if (!verify_flag(obj, flag))
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
                 goto usage;
             filetype = FORMAT_WAVE;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "nextstep"))
+        else if (!strcmp(flag, "-nextstep"))
         {
-            if (!verify_flag(obj, flag))
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
                 goto usage;
             filetype = FORMAT_NEXT;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "aiff"))
+        else if (!strcmp(flag, "-aiff"))
         {
-            if (!verify_flag(obj, flag))
-               goto usage;
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
+                goto usage;
             filetype = FORMAT_AIFF;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "big"))
+        else if (!strcmp(flag, "-big"))
         {
-            if (!verify_flag(obj, flag))
-               goto usage;
-
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
+                goto usage;
             endianness = 1;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "little"))
+        else if (!strcmp(flag, "-little"))
         {
-            if (!verify_flag(obj, flag))
+            if (flag_has_unexpected_floatarg(obj, flag, argc, argv))
                 goto usage;
             endianness = 0;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "r") || matchstring(flag, "rate"))
+        else if (!strcmp(flag, "-r") || !strcmp(flag, "-rate"))
         {
-            if (!flag_and_floatarg(obj, flag, argc, argv))
+            if (flag_is_missing_floatarg(obj, flag, argc, argv))
                 goto usage;
             if ((rate = argv[1].a_w.w_float) <= 0)
             {
@@ -847,32 +868,57 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
             goto usage;
         }
     }
-    if (!argc || argv->a_type != A_SYMBOL)
+    if (!argc)
+    {
+        pd_error(obj, "need a filename and table arguments");
         goto usage;
+    }
+        /* Now that we know we have at least one arg, let's make sure it's
+           a symbol. */
+    if (argv->a_type != A_SYMBOL)
+    {
+        pd_error(obj, "filename must be a symbol");
+        goto usage;
+    }
     filesym = argv->a_w.w_symbol;
-    
+        /* check if filesym is a flag name, and warn if so. */
+    int nodash;
+    if (file_is_a_flag_name(filesym, &nodash))
+    {
+        post("warning: filename '%s' looks like a flag%s",
+            filesym->s_name, nodash ? " name" : "");
+    }
         /* check if format not specified and fill in */
     if (filetype < 0) 
     {
         if (strlen(filesym->s_name) >= 5 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".aif") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".AIF")))
-                filetype = FORMAT_AIFF;
+             (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".aif") ||
+              !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".AIF")))
+	{
+            filetype = FORMAT_AIFF;
+	}
         if (strlen(filesym->s_name) >= 6 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".aiff") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".AIFF")))
-                filetype = FORMAT_AIFF;
+             (!strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".aiff") ||
+              !strcmp(filesym->s_name + strlen(filesym->s_name) - 5, ".AIFF")))
+	{
+            filetype = FORMAT_AIFF;
+	}
         if (strlen(filesym->s_name) >= 5 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".snd") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".SND")))
-                filetype = FORMAT_NEXT;
+             (!strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".snd") ||
+              !strcmp(filesym->s_name + strlen(filesym->s_name) - 4, ".SND")))
+	{
+            filetype = FORMAT_NEXT;
+	}
         if (strlen(filesym->s_name) >= 4 &&
-                        (!strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".au") ||
-                        !strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".AU")))
-                filetype = FORMAT_NEXT;
+             (!strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".au") ||
+              !strcmp(filesym->s_name + strlen(filesym->s_name) - 3, ".AU")))
+	{
+            filetype = FORMAT_NEXT;
+	}
         if (filetype < 0)
             filetype = FORMAT_WAVE;
     }
+fprintf(stderr, "even got here\n");
         /* don't handle AIFF floating point samples */
     if (bytespersamp == 4)
     {
@@ -882,6 +928,7 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
             goto usage;
         }
     }
+fprintf(stderr, "last place i got\n");
         /* for WAVE force little endian; for nextstep use machine native */
     if (filetype == FORMAT_WAVE)
     {
@@ -941,8 +988,8 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
         if (strcmp(filenamebuf + strlen(filenamebuf)-4, ".snd"))
             strcat(filenamebuf, ".snd");
         if (bigendian)
-            strncpy(nexthdr->ns_fileid, ".snd", 4);
-        else strncpy(nexthdr->ns_fileid, "dns.", 4);
+            memcpy(nexthdr->ns_fileid, ".snd", 4);
+        else memcpy(nexthdr->ns_fileid, "dns.", 4);
         nexthdr->ns_onset = swap4(sizeof(*nexthdr), swap);
         nexthdr->ns_length = 0;
         nexthdr->ns_format = swap4((bytespersamp == 3 ? NS_FORMAT_LINEAR_24 :
@@ -960,18 +1007,18 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
         if (strcmp(filenamebuf + strlen(filenamebuf)-4, ".aif") &&
             strcmp(filenamebuf + strlen(filenamebuf)-5, ".aiff"))
                 strcat(filenamebuf, ".aif");
-        strncpy(aiffhdr->a_fileid, "FORM", 4);
+        memcpy(aiffhdr->a_fileid, "FORM", 4);
         aiffhdr->a_chunksize = swap4((uint32_t)(datasize +
             sizeof(*aiffhdr) + 4), swap);
-        strncpy(aiffhdr->a_aiffid, "AIFF", 4);
-        strncpy(aiffhdr->a_fmtid, "COMM", 4);
+        memcpy(aiffhdr->a_aiffid, "AIFF", 4);
+        memcpy(aiffhdr->a_fmtid, "COMM", 4);
         aiffhdr->a_fmtchunksize = swap4(18, swap);
         aiffhdr->a_nchannels = swap2(nchannels, swap);
         longtmp = swap4((uint32_t)nframes, swap);
         memcpy(&aiffhdr->a_nframeshi, &longtmp, 4);
         aiffhdr->a_bitspersamp = swap2(8 * bytespersamp, swap);
         makeaiffsamprate(samplerate, aiffhdr->a_samprate);
-        strncpy(((char *)(&aiffhdr->a_samprate))+10, "SSND", 4);
+        memcpy(((char *)(&aiffhdr->a_samprate))+10, "SSND", 4);
         longtmp = swap4((uint32_t)(datasize + 8), swap);
         memcpy(((char *)(&aiffhdr->a_samprate))+14, &longtmp, 4);
         memset(((char *)(&aiffhdr->a_samprate))+18, 0, 8);
@@ -982,11 +1029,11 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
         long datasize = nframes * nchannels * bytespersamp;
         if (strcmp(filenamebuf + strlen(filenamebuf)-4, ".wav"))
             strcat(filenamebuf, ".wav");
-        strncpy(wavehdr->w_fileid, "RIFF", 4);
+        memcpy(wavehdr->w_fileid, "RIFF", 4);
         wavehdr->w_chunksize = swap4((uint32_t)(datasize +
             sizeof(*wavehdr) - 8), swap);
-        strncpy(wavehdr->w_waveid, "WAVE", 4);
-        strncpy(wavehdr->w_fmtid, "fmt ", 4);
+        memcpy(wavehdr->w_waveid, "WAVE", 4);
+        memcpy(wavehdr->w_fmtid, "fmt ", 4);
         wavehdr->w_fmtchunksize = swap4(16, swap);
         wavehdr->w_fmttag =
             swap2((bytespersamp == 4 ? WAV_FLOAT : WAV_INT), swap);
@@ -996,11 +1043,10 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
             swap4((int)(samplerate * nchannels * bytespersamp), swap);
         wavehdr->w_nblockalign = swap2(nchannels * bytespersamp, swap);
         wavehdr->w_nbitspersample = swap2(8 * bytespersamp, swap);
-        strncpy(wavehdr->w_datachunkid, "data", 4);
+        memcpy(wavehdr->w_datachunkid, "data", 4);
         wavehdr->w_datachunksize = swap4((uint32_t)datasize, swap);
         headersize = sizeof(t_wave);
     }
-
     canvas_makefilename(canvas, filenamebuf, buf2, FILENAME_MAX);
     sys_bashfilename(buf2, buf2);
     if ((fd = sys_open(buf2, BINCREATE, 0666)) < 0)
@@ -1404,12 +1450,12 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     info.headersize = -1;
     info.bigendian = 0;
     info.bytelimit = 0x7fffffff;
-    while (argc > 0 && argv->a_type == A_SYMBOL)
+    while (argc > 0 && atom_getsymbol(argv)->s_name[0] == '-')
     {
         char *flag = argv->a_w.w_symbol->s_name;
-        if (matchstring(flag, "skip"))
+        if (!strcmp(flag, "-skip"))
         {
-            if (!flag_and_floatarg(x, flag, argc, argv))
+            if (flag_is_missing_floatarg(x, flag, argc, argv))
                 goto usage;
             if ((skipframes = argv[1].a_w.w_float) < 0)
             {
@@ -1418,19 +1464,15 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             }
             argc -= 2; argv += 2;
         }
-        else if (matchstring(flag, "ascii"))
+        else if (!strcmp(flag, "-ascii"))
         {
-            if (!verify_flag(x, flag))
-                goto usage;
             if (info.headersize >= 0)
                 post("soundfiler_read: '-raw' overidden by '-ascii'");
             ascii = 1;
             argc--; argv++;
         }
-        else if (matchstring(flag, "raw"))
+        else if (!strcmp(flag, "-raw"))
         {
-            if (!verify_flag(x, flag))
-                goto usage;
             if (ascii)
                 post("soundfiler_read: '-raw' overridden by '-ascii'");
             if (argc < 5 ||
@@ -1455,16 +1497,14 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
             info.samplerate = sys_getsr();
             argc -= 5; argv += 5;
         }
-        else if (matchstring(flag, "resize"))
+        else if (!strcmp(flag, "-resize"))
         {
-            if (!verify_flag(x, flag))
-                goto usage;
             resize = 1;
             argc -= 1; argv += 1;
         }
-        else if (matchstring(flag, "maxsize"))
+        else if (!strcmp(flag, "-maxsize"))
         {
-            if (!flag_and_floatarg(x, flag, argc, argv))
+            if (flag_is_missing_floatarg(x, flag, argc, argv))
                 goto usage;
             maxsize = argv[1].a_w.w_float;
             if (maxsize > LONG_MAX)
@@ -1648,8 +1688,18 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
         &nframes, &samplerate))
                 goto usage;
     info->channels = argc;
-    if (info->channels < 1 || info->channels > MAXSFCHANS)
-        goto usage;
+        /* Need at least one table name for a channel to write... */
+    if (info->channels < 1)
+    {
+        pd_error(obj, "argument for table name missing");
+	goto usage;
+    }
+        /* Can't have more than max number of channels to write */
+    if (info->channels > MAXSFCHANS)
+    {
+        pd_error(obj, "cannot have more than %d channels", MAXSFCHANS);
+	goto usage;
+    }
     if (samplerate < 0)
         info->samplerate = sys_getsr();
     else
@@ -1658,13 +1708,17 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     {
         int vecsize;
         if (argv[i].a_type != A_SYMBOL)
+	{
+            pd_error(obj, "table name must be a symbol");
             goto usage;
+	}
         if (!(garrays[i] =
             (t_garray *)pd_findbyclass(argv[i].a_w.w_symbol, garray_class)))
         {
             pd_error(obj, "%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;
         }
+	    /* need to check this one-- */
         else if (!garray_getfloatwords(garrays[i], &vecsize, &vecs[i]))
             error("%s: bad template for tabwrite",
                 argv[i].a_w.w_symbol->s_name);
