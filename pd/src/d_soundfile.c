@@ -1475,19 +1475,73 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         {
             if (ascii)
                 post("soundfiler_read: '-raw' overridden by '-ascii'");
-            if (argc < 5 ||
-                argv[1].a_type != A_FLOAT ||
-                ((info.headersize = argv[1].a_w.w_float) < 0) ||
-                argv[2].a_type != A_FLOAT ||
-                ((info.channels = argv[2].a_w.w_float) < 1) ||
-                (info.channels > MAXSFCHANS) || 
-                argv[3].a_type != A_FLOAT ||
-                ((info.bytespersample = argv[3].a_w.w_float) < 2) || 
-                    (info.bytespersample > 4) ||
-                argv[4].a_type != A_SYMBOL ||
-                    ((endianness = argv[4].a_w.w_symbol->s_name[0]) != 'b'
-                    && endianness != 'l' && endianness != 'n'))
-                        goto usage;
+            if (argc < 5)
+            {
+                argerror(x, "soundfiler_read: '-raw' flag needs four "
+                    "arguments");
+		post("(-raw <headersize> <channels> <bytespersample> "
+                    "<endianness>)");
+                goto usage;
+            }
+            if (argv[1].a_type != A_FLOAT)
+            {
+                argerror(x, "soundfiler_read: '-raw' flag needs a float for "
+                    "the headersize");
+                goto usage;
+            }
+            info.headersize = argv[1].a_w.w_float;
+            if (info.headersize < 0)
+            {
+                argerror(x, "soundfiler_read: '-raw' headersize cannot be less "
+                    "than zero");
+                goto usage;
+            }
+            if (argv[2].a_type != A_FLOAT)
+            {
+                argerror(x, "soundfiler_read: '-raw' flag needs a float to "
+                    "specify channels");
+                goto usage;
+            }
+            info.channels = argv[2].a_w.w_float;
+            if (info.channels < 1)
+            {
+                argerror(x, "soundfiler_read: '-raw' flag needs at least one "
+                    "channel");
+                goto usage;
+            }
+            if (info.channels > MAXSFCHANS)
+            {
+                argerror(x, "soundfiler_read: '-raw' channels value %d exceeds "
+                    "maximum of %d channels", info.channels, MAXSFCHANS);
+                goto usage;
+            }
+            if (argv[3].a_type != A_FLOAT)
+            {
+                argerror(x, "soundfiler_read: '-raw' flag needs a float to "
+                    "specify bytes per sample");
+                goto usage;
+            }
+            info.bytespersample = argv[3].a_w.w_float;
+            if (info.bytespersample < 2)
+            {
+                argerror(x, "soundfiler_read: '-raw' bytes per sample must be "
+                    "at least 2");
+                goto usage;
+            }
+            if (info.bytespersample > 4)
+            {
+                argerror(x, "soundfiler_read: '-raw' bytes per sample must be "
+                    "less than 4");
+                goto usage;
+            }
+            if (argv[4].a_type != A_SYMBOL ||
+                ((endianness = argv[4].a_w.w_symbol->s_name[0]) != 'b'
+                  && endianness != 'l' && endianness != 'n'))
+            {
+                argerror(x, "soundfiler_read: '-raw' endianness must be 'l' or "
+                    "'b' or 'n'");
+                goto usage;
+            }
             if (endianness == 'b')
                 info.bigendian = 1;
             else if (endianness == 'l')
@@ -1499,6 +1553,8 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         }
         else if (!strcmp(flag, "-resize"))
         {
+            if (flag_has_unexpected_floatarg(x, flag, argc, argv))
+                goto usage;
             resize = 1;
             argc -= 1; argv += 1;
         }
