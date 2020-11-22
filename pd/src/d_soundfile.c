@@ -1477,69 +1477,62 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
                 post("soundfiler_read: '-raw' overridden by '-ascii'");
             if (argc < 5)
             {
-                argerror(x, "soundfiler_read: '-raw' flag needs four "
-                    "arguments");
+                argerror(x, "'-raw' flag needs four arguments");
 		post("(-raw <headersize> <channels> <bytespersample> "
                     "<endianness>)");
                 goto usage;
             }
             if (argv[1].a_type != A_FLOAT)
             {
-                argerror(x, "soundfiler_read: '-raw' flag needs a float for "
-                    "the headersize");
+                argerror(x, "'-raw' flag needs a float for the headersize");
                 goto usage;
             }
             info.headersize = argv[1].a_w.w_float;
             if (info.headersize < 0)
             {
-                argerror(x, "soundfiler_read: '-raw' headersize cannot be less "
-                    "than zero");
+                argerror(x, "'-raw' headersize cannot be less than zero");
                 goto usage;
             }
             if (argv[2].a_type != A_FLOAT)
             {
-                argerror(x, "soundfiler_read: '-raw' flag needs a float to "
-                    "specify channels");
+                argerror(x, "'-raw' flag needs a float to specify channels");
                 goto usage;
             }
             info.channels = argv[2].a_w.w_float;
             if (info.channels < 1)
             {
-                argerror(x, "soundfiler_read: '-raw' flag needs at least one "
-                    "channel");
+                argerror(x, "'-raw' flag needs at least one channel");
                 goto usage;
             }
             if (info.channels > MAXSFCHANS)
             {
-                argerror(x, "soundfiler_read: '-raw' channels value %d exceeds "
+                argerror(x, "'-raw' channels value %d exceeds "
                     "maximum of %d channels", info.channels, MAXSFCHANS);
                 goto usage;
             }
             if (argv[3].a_type != A_FLOAT)
             {
-                argerror(x, "soundfiler_read: '-raw' flag needs a float to "
+                argerror(x, "'-raw' flag needs a float to "
                     "specify bytes per sample");
                 goto usage;
             }
             info.bytespersample = argv[3].a_w.w_float;
             if (info.bytespersample < 2)
             {
-                argerror(x, "soundfiler_read: '-raw' bytes per sample must be "
+                argerror(x, "'-raw' bytes per sample must be "
                     "at least 2");
                 goto usage;
             }
             if (info.bytespersample > 4)
             {
-                argerror(x, "soundfiler_read: '-raw' bytes per sample must be "
-                    "less than 4");
+                argerror(x, "'-raw' bytes per sample must be less than 4");
                 goto usage;
             }
             if (argv[4].a_type != A_SYMBOL ||
                 ((endianness = argv[4].a_w.w_symbol->s_name[0]) != 'b'
                   && endianness != 'l' && endianness != 'n'))
             {
-                argerror(x, "soundfiler_read: '-raw' endianness must be 'l' or "
-                    "'b' or 'n'");
+                argerror(x, "'-raw' endianness must be 'l' or 'b' or 'n'");
                 goto usage;
             }
             if (endianness == 'b')
@@ -1597,7 +1590,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         if (!(garrays[i] =
             (t_garray *)pd_findbyclass(argv[i].a_w.w_symbol, garray_class)))
         {
-            pd_error(x, "%s: no such table", argv[i].a_w.w_symbol->s_name);
+            argerror(x, "%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto done;
         }
         else if (!garray_getfloatwords(garrays[i], &vecsize, 
@@ -1621,7 +1614,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     
     if (fd < 0)
     {
-        pd_error(x, "soundfiler_read: %s: %s", filename, (errno == EIO ?
+        argerror(x, "%s: %s", filename, (errno == EIO ?
             "unknown or bad header format" : strerror(errno)));
         goto done;
     }
@@ -1635,7 +1628,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         eofis = lseek(fd, 0, SEEK_END);
         if (poswas < 0 || eofis < 0 || eofis < poswas)
         {
-            pd_error(x, "soundfiler_read: lseek failed: %ld..%ld", poswas,
+            argerror(x, "lseek failed: %ld..%ld", poswas,
                 eofis);
             goto done;
         }
@@ -1643,7 +1636,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         framesinfile = (eofis - poswas) / (info.channels * info.bytespersample);
         if (framesinfile > maxsize)
         {
-            pd_error(x, "soundfiler_read: truncated to %ld elements", maxsize);
+            argerror(x, "truncated to %ld elements", maxsize);
             framesinfile = maxsize;
         }
         if (framesinfile > info.bytelimit /
@@ -1664,7 +1657,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
                 || (vecsize != framesinfile))
             {
                 /* if the resize failed, garray_resize reported the error */
-                pd_error(x, "resize failed");
+                argerror(x, "resize failed");
                 goto done;
             }
         }
@@ -1747,13 +1740,13 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
         /* Need at least one table name for a channel to write... */
     if (info->channels < 1)
     {
-        pd_error(obj, "argument for table name missing");
+        argerror(obj, "argument for table name missing");
 	goto usage;
     }
         /* Can't have more than max number of channels to write */
     if (info->channels > MAXSFCHANS)
     {
-        pd_error(obj, "cannot have more than %d channels", MAXSFCHANS);
+        argerror(obj, "cannot have more than %d channels", MAXSFCHANS);
 	goto usage;
     }
     if (samplerate < 0)
@@ -1765,13 +1758,13 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
         int vecsize;
         if (argv[i].a_type != A_SYMBOL)
 	{
-            pd_error(obj, "table name must be a symbol");
+            argerror(obj, "table name must be a symbol");
             goto usage;
 	}
         if (!(garrays[i] =
             (t_garray *)pd_findbyclass(argv[i].a_w.w_symbol, garray_class)))
         {
-            pd_error(obj, "%s: no such table", argv[i].a_w.w_symbol->s_name);
+            argerror(obj, "%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;
         }
 	    /* need to check this one-- */
@@ -1783,7 +1776,7 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     }
     if (nframes <= 0)
     {
-        pd_error(obj, "soundfiler_write: no samples at onset %ld", onset);
+        argerror(obj, "soundfiler_write: no samples at onset %ld", onset);
         goto fail;
     }
         /* find biggest sample for normalizing */
