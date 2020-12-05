@@ -496,7 +496,13 @@ EXTERN t_pdinstance *pdinstance_new(void)
 void pd_init(void)
 {
     if (!pd_this)
+    {
         pd_this = pdinstance_donew(0);
+        /* For now, just copy pd_this values to pd_maininstance. If someone
+           finds a reason to add support for multiple instances, feel free to
+           port all the pdinstance business from Pd Vanilla in m_class.c */
+        pd_maininstance = *pd_this;
+    }
     mess_init();
     obj_init();
     conf_init();

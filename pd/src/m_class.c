@@ -40,6 +40,7 @@ typedef struct _classtable
 } t_classtable;
 
 t_classtable *ct;
+t_pdinstance pd_maininstance;
 
 static t_symbol *class_extern_dir = &s_;
 

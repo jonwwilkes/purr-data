@@ -853,6 +853,7 @@ EXTERN void sys_getversion(int *major, int *minor, int *bugfix);
 
 EXTERN_STRUCT _pdinstance;
 #define t_pdinstance struct _pdinstance       /* m_imp.h */
+EXTERN t_pdinstance pd_maininstance;
 
 /* m_pd.c */
 
