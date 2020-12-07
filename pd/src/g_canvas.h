@@ -492,6 +492,7 @@ EXTERN int glist_isvisible(t_glist *x);
 EXTERN int glist_istoplevel(t_glist *x);
 EXTERN t_glist *glist_findgraph(t_glist *x);
 EXTERN int glist_getfont(t_glist *x);
+EXTERN int glist_getzoom(t_glist *x);
 EXTERN void glist_sort(t_glist *canvas);
 EXTERN void glist_read(t_glist *x, t_symbol *filename, t_symbol *format);
 EXTERN void glist_mergefile(t_glist *x, t_symbol *filename, t_symbol *format);

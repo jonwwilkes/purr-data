@@ -1261,6 +1261,15 @@ int glist_getfont(t_glist *x)
     return (x->gl_font);
 }
 
+int glist_getzoom(t_glist *x)
+{
+    /* Purr Data does zooming in the GUI, so this interface from Vanilla is not
+       needed. If some external is reaching in trying to call this, flag it as
+       a bug... */
+    bug("glist_getzoom");
+    return 0;
+}
+
 extern void canvas_group_free(t_pd *x);
 static void canvas_deregister_ab(t_canvas *x, t_ab_definition *a);
 
