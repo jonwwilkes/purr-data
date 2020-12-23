@@ -382,6 +382,11 @@ static int bng_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix,
     return (1);
 }
 
+static void bng_focus(t_gobj *z, struct _glist *glist, int state)
+{
+    /* not yet */
+}
+
 static void bng_float(t_bng *x, t_floatarg f)                  {bng_bang2(x);}
 static void bng_symbol(t_bng *x, t_symbol *s)                  {bng_bang2(x);}
 static void bng_pointer(t_bng *x, t_gpointer *gp)              {bng_bang2(x);}
@@ -534,7 +539,7 @@ void g_bang_setup(void)
         A_GIMME, 0);
     class_addmethod(bng_class, (t_method)iemgui_init, gensym("init"), A_FLOAT, 0);
  
-    wb_init(&bng_widgetbehavior,bng_getrect,bng_newclick);
+    iemgui_wb_init(&bng_widgetbehavior, bng_getrect, bng_newclick, bng_focus);
     class_setwidget(bng_class, &bng_widgetbehavior);
     class_sethelpsymbol(bng_class, gensym("bng"));
     class_setsavefn(bng_class, bng_save);

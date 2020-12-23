@@ -381,7 +381,7 @@ void g_mycanvas_setup(void)
     class_addmethod(my_canvas_class, (t_method)my_canvas_get_pos,
         gensym("get_pos"), 0);
 
-    wb_init(&my_canvas_widgetbehavior,my_canvas_getrect,0);
+    iemgui_wb_init(&my_canvas_widgetbehavior, my_canvas_getrect, 0, NULL);
     class_setwidget(my_canvas_class, &my_canvas_widgetbehavior);
     class_sethelpsymbol(my_canvas_class, gensym("my_canvas"));
     class_setsavefn(my_canvas_class, my_canvas_save);

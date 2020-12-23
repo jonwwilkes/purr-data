@@ -734,7 +734,7 @@ void g_vumeter_setup(void)
         gensym("scale"), A_DEFFLOAT, 0);
     iemgui_class_addmethods(vu_class);
 
-    wb_init(&vu_widgetbehavior,vu_getrect,0);
+    iemgui_wb_init(&vu_widgetbehavior, vu_getrect, 0, 0);
     class_setwidget(vu_class,&vu_widgetbehavior);
     class_sethelpsymbol(vu_class, gensym("vu"));
     class_setsavefn(vu_class, vu_save);

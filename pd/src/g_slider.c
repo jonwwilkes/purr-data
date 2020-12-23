@@ -408,6 +408,11 @@ static int slider_newclick(t_gobj *z, struct _glist *glist,
     return (1);
 }
 
+static void slider_focus(t_gobj *z, struct _glist *glist, int state)
+{
+    /* not yet */
+}
+
 static void slider_set(t_slider *x, t_floatarg f)
 {
     double g;
@@ -617,7 +622,8 @@ void slider_addmethods(t_class *c) {
 
 void g_slider_setup(void)
 {
-    wb_init(&slider_widgetbehavior,slider_getrect,slider_newclick);
+    iemgui_wb_init(&slider_widgetbehavior, slider_getrect, slider_newclick,
+        slider_focus);
 
     hslider_class = class_new(gensym("hsl"), (t_newmethod)slider_new,
         (t_method)slider_free, sizeof(t_slider), 0, A_GIMME, 0);

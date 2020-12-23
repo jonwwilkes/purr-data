@@ -359,7 +359,11 @@ typedef void (*t_getrectfn)(t_gobj *x, struct _glist *glist,
 typedef void (*t_displacefn)(t_gobj *x, struct _glist *glist, int dx, int dy);
         /* change color to show selection: */
 typedef void (*t_selectfn)(t_gobj *x, struct _glist *glist, int state);
-        /* change appearance to show activation/deactivation: */
+        /* change appearance to show activation/deactivation. For example,
+           default widget behavior is to be able to edit the box text when
+           a gobj is activated. Another example: iemguis set this callback
+           to NULL-- this means you can't activate an iemgui when clicking
+           in editmode. */
 typedef void (*t_activatefn)(t_gobj *x, struct _glist *glist, int state);
         /* warn a gobj it's about to be deleted */
 typedef void (*t_deletefn)(t_gobj *x, struct _glist *glist);
@@ -370,6 +374,8 @@ typedef int (*t_clickfn)(t_gobj *x, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit);
         /* and this to displace a gobj using tags: */
 typedef void (*t_displacefnwtag)(t_gobj *x, struct _glist *glist, int dx, int dy);
+        /* grab mouse/keyboard focus in runmode */
+typedef void (*t_focusfn)(t_gobj *x, struct _glist *glist, int state);
         /* ... and later, resizing; getting/setting font or color... */
 
 struct _widgetbehavior
@@ -382,6 +388,7 @@ struct _widgetbehavior
     t_visfn w_visfn;
     t_clickfn w_clickfn;
     t_displacefnwtag w_displacefnwtag;
+    t_focusfn w_focusfn;
 };
 
 /* -------- behaviors for scalars defined by objects in template --------- */
@@ -487,6 +494,12 @@ EXTERN void glist_delete(t_glist *x, t_gobj *y);
 EXTERN void glist_retext(t_glist *x, t_text *y);
 EXTERN void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
     t_glistkeyfn keyfn, t_glistkeynameafn keynameafn,
+    int xpos, int ypos);
+    /* grab keyfn from glist without changing the motionfn callback */
+EXTERN void glist_grab_key(t_glist *x, t_gobj *y, t_glistkeyfn keyfn,
+    t_glistkeynameafn keynameafn);
+    /* similarly, grab mouse without changing the glist's keyfn callback */
+EXTERN void glist_grab_mouse(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
     int xpos, int ypos);
 EXTERN int glist_isvisible(t_glist *x);
 EXTERN int glist_istoplevel(t_glist *x);

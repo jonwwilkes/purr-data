@@ -419,6 +419,11 @@ static int radio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix,
     return (1);
 }
 
+static void radio_focus(t_gobj *z, struct _glist *glist, int state)
+{
+    /* not yet */
+}
+
 static void radio_loadbang(t_radio *x, t_floatarg action)
 {
     if(action == LB_LOAD && x->x_gui.x_loadinit)
@@ -548,7 +553,8 @@ void radio_addmethods(t_class *c)
 
 void g_radio_setup(void)
 {
-    wb_init(&radio_widgetbehavior,radio_getrect,radio_newclick);
+    iemgui_wb_init(&radio_widgetbehavior, radio_getrect, radio_newclick,
+        radio_focus);
     hradio_class = class_new(gensym("hradio"), (t_newmethod)radio_new,
         (t_method)radio_free, sizeof(t_radio), 0, A_GIMME, 0);
     hradio_old_class = class_new(gensym("hdl"), (t_newmethod)radio_new,

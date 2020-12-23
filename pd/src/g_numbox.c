@@ -39,7 +39,7 @@ static void my_numbox_tick_reset(t_my_numbox *x)
     if(x->x_gui.x_change && x->x_gui.x_glist)
     {
         //post("    success\n");
-        my_numbox_set_change(x, 0);
+        x->x_gui.x_change = 0;
         my_numbox_ftoa(x, 0);
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
@@ -53,18 +53,19 @@ static void my_numbox_tick_wait(t_my_numbox *x)
     sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
 }
 
+/* this can be removed... */
 // to enable ability to change values using arrow keys (only when focused)
 static void my_numbox_set_change(t_my_numbox *x, t_floatarg f)
 {
     if (f == 0 && x->x_gui.x_change != 0)
     {
         x->x_gui.x_change = 0;
-        pd_unbind(&x->x_gui.x_obj.ob_pd, numbox_keyname_sym_a);
+//        pd_unbind(&x->x_gui.x_obj.ob_pd, numbox_keyname_sym_a);
     }
     else if (f == 1 && x->x_gui.x_change != 1)
     {
         x->x_gui.x_change = 1;
-        pd_bind(&x->x_gui.x_obj.ob_pd, numbox_keyname_sym_a);        
+//        pd_bind(&x->x_gui.x_obj.ob_pd, numbox_keyname_sym_a);        
     }
 }
 
@@ -153,6 +154,13 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
 {
     t_my_numbox *x = (t_my_numbox *)client;
 
+    /* the following comment and related changes to this function body are pure
+       spaghetti.
+
+       For now we route around this spaghetti by simply calling a single
+       GUI method to set the focus style. Later, this should be inspected
+       and cleaned up so that it's readable/reasonable again. */
+
     // we cannot ignore this call even if there is no change
     // since that will mess up number highlighting while editing
     // the code is left here as it is similar to other iemguis
@@ -161,53 +169,53 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
 
     x->x_gui.x_changed = 0;
     if (!glist_isvisible(glist)) return;
-    if(x->x_gui.x_change && x->x_buf[0])
+    if (x->x_buf[0])
     {
         //post("draw_update 1 : focused=%d", x->x_focused);
-        char *cp=x->x_buf;
+        char *cp = x->x_buf;
         int sl = strlen(x->x_buf);
-        if (x->x_focused == 1)
-        {
-            x->x_buf[sl] = '>';
-            x->x_buf[sl+1] = 0;
-        } else if (x->x_focused == 2) {
+//        if (x->x_focused == 1)
+//        {
+//            x->x_buf[sl] = '>';
+//            x->x_buf[sl+1] = 0;
+//        }
+//        else if (x->x_focused == 2)
+//        {
             // this is triggered when one presses return while retaining the focus of the number
             // so, we make sure to subtract the '>' that has disappeared and adjust visible digits
             // accordingly below
             x->x_buf[sl] = 0;
-            sl--;
-        }
-        if(sl >= x->x_gui.x_w)
+//            sl--;
+//        }
+        if (sl >= x->x_gui.x_w)
             cp += sl - x->x_gui.x_w + 1;
-        gui_vmess("gui_text_set_mynumbox", "xxsi",
+        gui_vmess("gui_text_set", "xxs",
             glist_getcanvas(glist),
             x,
-            cp,
-            1);
+            cp);
         // here we check that we are not in the focused mode 2 that has this already taken care of above
-        if (x->x_focused != 2)
-            x->x_buf[sl] = 0;
+//        if (x->x_focused != 2)
+//            x->x_buf[sl] = 0;
     }
     else
     {
         //if (!x->x_focused || x->x_focused == 2)
         //post("draw_update 2: x->x_buf=<%s> focused=%d change=%d", x->x_buf, x->x_focused, x->x_gui.x_change);
-        if (!x->x_buf[0] && x->x_focused == 1 && x->x_gui.x_change == 1)
-        {
-            x->x_buf[0] = '>';
-            x->x_buf[1] = 0;
-        }
-        else
-        {
+        //if (!x->x_buf[0])
+        //{
+        //    x->x_buf[0] = '0';
+        //    x->x_buf[1] = 0;
+        //}
+        //else
+        //{
+	    /* side effect-- set x->x_buf to the computed value... */
             my_numbox_ftoa(x, 0); /* mmm... side-effects */
-        }
-        gui_vmess("gui_text_set_mynumbox", "xxsi",
+        //}
+        gui_vmess("gui_text_set", "xxs",
             glist_getcanvas(glist),
             x,
-            x->x_buf,
-            x->x_gui.x_selected == glist_getcanvas(glist) && 
-                !x->x_gui.x_change && x->x_gui.x_glist == glist_getcanvas(glist) ?
-                2 : (x->x_gui.x_change ? 1 : 0));
+            x->x_buf);
+	    /* ... thus we have to clean up the buf for future key callbacks */
         x->x_buf[0] = 0; /* mmm... more side-effects... no clue why we'd need
                             to mutate a struct member in order to draw stuff */
     }
@@ -300,8 +308,8 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
     int issel = x->x_gui.x_selected == canvas && x->x_gui.x_glist == canvas;
     if(x->x_gui.x_selected && x->x_gui.x_change)
     {
-        my_numbox_set_change(x, 0);
-        clock_unset(x->x_clock_reset);
+        x->x_gui.x_change = 0;
+//        clock_unset(x->x_clock_reset);
         x->x_buf[0] = 0;
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
@@ -451,8 +459,8 @@ static void my_numbox_save(t_gobj *z, t_binbuf *b)
     iemgui_save(&x->x_gui, srl, bflcol);
     if(x->x_gui.x_change)
     {
-        my_numbox_set_change(x, 0);
-        clock_unset(x->x_clock_reset);
+        x->x_gui.x_change = 0;
+//        clock_unset(x->x_clock_reset);
         x->x_gui.x_changed = 1;
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
@@ -514,8 +522,8 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     iemgui_properties(&x->x_gui, srl);
     if(x->x_gui.x_change)
     {
-        my_numbox_set_change(x, 0);
-        clock_unset(x->x_clock_reset);
+        x->x_gui.x_change = 0;
+//        clock_unset(x->x_clock_reset);
         x->x_gui.x_changed = 1;
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
 
@@ -599,6 +607,7 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
 
 static void my_numbox_motion(t_my_numbox *x, t_floatarg dx, t_floatarg dy)
 {
+fprintf(stderr, "motion...\n");
     x->x_focused = 2;
     double k2=1.0;
     int old = x->x_val;
@@ -617,37 +626,78 @@ static void my_numbox_motion(t_my_numbox *x, t_floatarg dx, t_floatarg dy)
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
         my_numbox_bang(x);
     }
-    clock_unset(x->x_clock_reset);
-    clock_delay(x->x_clock_reset, 3000);
+//    clock_unset(x->x_clock_reset);
+//    clock_delay(x->x_clock_reset, 3000);
 }
 
+    /* Still unsure where this gets used */
 static void my_numbox_click(t_my_numbox *x, t_floatarg xpos, t_floatarg ypos,
-                            t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+    t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
 {
     glist_grab(x->x_gui.x_glist, &x->x_gui.x_obj.te_g,
-        (t_glistmotionfn)my_numbox_motion, my_numbox_key, my_numbox_list, xpos, ypos);
+        (t_glistmotionfn)my_numbox_motion, my_numbox_key, my_numbox_list,
+        xpos, ypos);
+}
+
+static void my_numbox_draw_focus(t_my_numbox *x, int state)
+{
+    gui_vmess("gui_numbox_focus", "xxi", x->x_gui.x_glist, x, state);
+}
+
+static void my_numbox_focus(t_gobj *z, struct _glist *glist, int state)
+{
+fprintf(stderr, "we got focus!\n");
+    if (state)
+    {
+            /* set our own glist_grab with only the key callback. focus on click
+               is handled separately below since it needs to also set a motion
+               callback */
+        /* grab keyfn from glist without changing the motionfn callback */
+        glist_grab_key(glist, z, my_numbox_key, my_numbox_list);
+//    x->x_gui.x_change = 1;
+//
+    }
+    else
+    {
+        /* if we're losing keyboard focus lose mouse focus, too */
+        glist_grab(glist, 0, 0, 0, 0, 0, 0);
+    }
+        /* now set the gui focus */
+    t_my_numbox* x = (t_my_numbox *)z;
+    my_numbox_draw_focus(x, state);
 }
 
 static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_my_numbox* x = (t_my_numbox *)z;
-    if(doit)
+fprintf(stderr, "x_change is %d\n", x->x_gui.x_change);
+    int mouse_up = dbl;
+    if (doit)
     {
         //printf("newclick doit\n");
-        my_numbox_click( x, (t_floatarg)xpix, (t_floatarg)ypix,
-            (t_floatarg)shift, 0, (t_floatarg)alt);
-        if(shift)
+            /* grab mouse without changing the glist's keyfn callback */
+        glist_grab_mouse(glist, z, (t_glistmotionfn)my_numbox_motion,
+            (t_floatarg)xpix, (t_floatarg)ypix);
+            /* grab the focus */
+        my_numbox_focus(z, glist, 1);
+
+        if (shift)
         {
             x->x_gui.x_finemoved = 1;
         }
         else
             x->x_gui.x_finemoved = 0;
-        if(!x->x_gui.x_change)
-        {
-            clock_delay(x->x_clock_wait, 50);
-            my_numbox_set_change(x, 1);
-            clock_delay(x->x_clock_reset, 3000);
+//        if (!x->x_gui.x_change)
+//        {
+                /* unrolled callback hell:
+                   x->x_clock_wait ->
+		   my_numbox_tick_wait ->
+		   my_numbox_draw_update
+                */
+//            clock_delay(x->x_clock_wait, 50);
+            x->x_gui.x_change = 1;
+//            clock_delay(x->x_clock_reset, 3000);
 
             if (shift)
                 my_numbox_ftoa(x, 1);
@@ -655,15 +705,15 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
                 x->x_buf[0] = 0;
             x->x_focused = 2;
             sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
-        }
-        else
-        {
-            my_numbox_set_change(x, 0);
-            clock_unset(x->x_clock_reset);
-            x->x_buf[0] = 0;
-            x->x_gui.x_changed = 1;
-            sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
-        }
+//        }
+//        else
+//        {
+//            x->x_gui.x_change = 0;
+//            clock_unset(x->x_clock_reset);
+//            x->x_buf[0] = 0;
+//            x->x_gui.x_changed = 1;
+//            sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+//        }
     }
     else
     {
@@ -769,6 +819,7 @@ static void my_numbox_loadbang(t_my_numbox *x, t_floatarg action)
 
 static void my_numbox_key(void *z, t_floatarg fkey)
 {
+fprintf(stderr, "got it. key is %g\n", fkey);
     t_my_numbox *x = z;
     if (fkey != 0)
         x->x_focused = 1;
@@ -776,10 +827,10 @@ static void my_numbox_key(void *z, t_floatarg fkey)
     // this is used for arrow up and down
     if (fkey == -1)
     {
-        clock_unset(x->x_clock_reset);
+//        clock_unset(x->x_clock_reset);
         x->x_gui.x_changed = 1;
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
-        clock_delay(x->x_clock_reset, 3000);
+//        clock_delay(x->x_clock_reset, 3000);
         return;
     }
 
@@ -791,10 +842,9 @@ static void my_numbox_key(void *z, t_floatarg fkey)
     // and therefore loses focus
     if (c == 0)
     {
-        my_numbox_set_change(x, 0);
-        clock_unset(x->x_clock_reset);
+//        clock_unset(x->x_clock_reset);
         x->x_gui.x_changed = 1;
-        clock_delay(x->x_clock_reset, 0);
+//        clock_delay(x->x_clock_reset, 0);
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
         return;
     }
@@ -817,6 +867,7 @@ static void my_numbox_key(void *z, t_floatarg fkey)
         else
             sl=strlen(x->x_buf)-1;
 
+fprintf(stderr, "strlen of x_buf is %d\n", sl);
         if(sl < 0)
             sl = 0;
         x->x_buf[sl] = 0;
@@ -826,9 +877,10 @@ static void my_numbox_key(void *z, t_floatarg fkey)
     else if((c=='\n')||(c==13))
     {
         x->x_val = atof(x->x_buf);
-        //x->x_buf[0] = 0;
-        my_numbox_set_change(x, 1);
-        clock_unset(x->x_clock_reset);
+fprintf(stderr, "atof'ing the value... it is %g\n", x->x_val);
+        x->x_buf[0] = 0;
+        x->x_gui.x_change = 1;
+//        clock_unset(x->x_clock_reset);
         my_numbox_clip(x);
         my_numbox_bang(x);
         x->x_gui.x_changed = 1;
@@ -838,11 +890,11 @@ static void my_numbox_key(void *z, t_floatarg fkey)
 
     if(c==27)
     {
-        clock_unset(x->x_clock_reset);
+//        clock_unset(x->x_clock_reset);
         my_numbox_tick_reset(x);
     }
-    else
-        clock_delay(x->x_clock_reset, 3000);
+//    else
+//        clock_delay(x->x_clock_reset, 3000);
 }
 
 static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
@@ -976,7 +1028,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_numwidth = my_numbox_calc_fontwidth(x);
     my_numbox_check_minmax(x, min, max);
     iemgui_verify_snd_ne_rcv(&x->x_gui);
-    x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
+//    x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
     x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
     x->x_gui.x_change = 0;
     outlet_new(&x->x_gui.x_obj, &s_float);
@@ -1003,8 +1055,7 @@ static void my_numbox_free(t_my_numbox *x)
 {
     if(iemgui_has_rcv(&x->x_gui))
         pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
-    my_numbox_set_change(x, 0);
-    clock_free(x->x_clock_reset);
+//    clock_free(x->x_clock_reset);
     clock_free(x->x_clock_wait);
     gfxstub_deleteforkey(x);
 
@@ -1049,7 +1100,8 @@ void g_numbox_setup(void)
 
     numbox_keyname_sym_a = gensym("#keyname_a");
 
-    wb_init(&my_numbox_widgetbehavior,my_numbox_getrect,my_numbox_newclick);
+    iemgui_wb_init(&my_numbox_widgetbehavior, my_numbox_getrect,
+        my_numbox_newclick, my_numbox_focus);
     class_setwidget(my_numbox_class, &my_numbox_widgetbehavior);
     class_sethelpsymbol(my_numbox_class, gensym("numbox2"));
     class_setsavefn(my_numbox_class, my_numbox_save);

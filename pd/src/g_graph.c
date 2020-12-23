@@ -372,6 +372,7 @@ void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn, t_glistkeyfn ke
     t_glistkeynameafn keynameafn, int xpos, int ypos)
 {
     //fprintf(stderr,"glist_grab\n");
+
     t_glist *x2 = glist_getcanvas(x);
     if (motionfn)
         x2->gl_editor->e_onmotion = MA_PASSOUT;
@@ -382,6 +383,23 @@ void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn, t_glistkeyfn ke
     x2->gl_editor->e_keynameafn = keynameafn;
     x2->gl_editor->e_xwas = xpos;
     x2->gl_editor->e_ywas = ypos;
+}
+
+    /* separate key and mouse calls for convenience with focusfn */
+
+void glist_grab_key(t_glist *x, t_gobj *y, t_glistkeyfn keyfn,
+    t_glistkeynameafn keynameafn)
+{
+    t_glist *x2 = glist_getcanvas(x);
+    glist_grab(x, y, x2->gl_editor->e_motionfn, keyfn, keynameafn, 0, 0);
+}
+
+void glist_grab_mouse(t_glist *x, t_gobj *y, t_glistmotionfn motionfn, int xpos,
+    int ypos)
+{
+    t_glist *x2 = glist_getcanvas(x);
+    glist_grab(x, y, motionfn, x2->gl_editor->e_keyfn,
+        x2->gl_editor->e_keynameafn, xpos, ypos);
 }
 
 t_canvas *glist_getcanvas(t_glist *x)
@@ -1770,6 +1788,7 @@ t_widgetbehavior graph_widgetbehavior =
     graph_vis,
     graph_click,
     graph_displace_withtag,
+    NULL
 };
 
     /* find the graph most recently added to this glist;

@@ -305,6 +305,11 @@ static int toggle_newclick(t_gobj *z, struct _glist *glist,
     return (1);
 }
 
+static void toggle_focus(t_gobj *z, struct _glist *glist, int state)
+{
+    /* not yet */
+}
+
 static void toggle_set(t_toggle *x, t_floatarg f)
 {
     if (x->x_on != f) x->x_gui.x_changed = 1;
@@ -449,7 +454,8 @@ void g_toggle_setup(void)
     class_addmethod(toggle_class, (t_method)toggle_nonzero, gensym("nonzero"),
         A_FLOAT, 0);
  
-    wb_init(&toggle_widgetbehavior,toggle_getrect,toggle_newclick);
+    iemgui_wb_init(&toggle_widgetbehavior, toggle_getrect, toggle_newclick,
+        toggle_focus);
     class_setwidget(toggle_class, &toggle_widgetbehavior);
     class_sethelpsymbol(toggle_class, gensym("toggle"));
     class_setsavefn(toggle_class, toggle_save);

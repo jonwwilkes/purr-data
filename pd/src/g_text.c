@@ -2449,7 +2449,8 @@ void text_save(t_gobj *z, t_binbuf *b)
     }
 }
 
-    /* this one is for everyone but "gatoms"; it's imposed in m_class.c */
+    /* this one is for everyone but "gatom" and "dropdown"; it's imposed in
+       m_class.c */
 t_widgetbehavior text_widgetbehavior =
 {
     text_getrect,
@@ -2460,6 +2461,8 @@ t_widgetbehavior text_widgetbehavior =
     text_vis,
     text_click,
     text_displace_withtag,
+    NULL /* add a callback for use with msg box focus, or make a separate
+            widgetbehavior for it */
 };
 
 static t_widgetbehavior gatom_widgetbehavior =
@@ -2472,6 +2475,7 @@ static t_widgetbehavior gatom_widgetbehavior =
     gatom_vis,
     text_click,
     text_displace_withtag,
+    NULL /* define this later */
 };
 
 static t_widgetbehavior dropdown_widgetbehavior =
@@ -2484,6 +2488,7 @@ static t_widgetbehavior dropdown_widgetbehavior =
     dropdown_vis,
     dropdown_click,
     text_displace_withtag,
+    NULL /* define this later */
 };
 
 /* -------------------- the "text" class  ------------ */

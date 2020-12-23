@@ -1496,7 +1496,8 @@ void scrollbar_synchronous_update(t_glist *glist)
         "x", glist_getcanvas(glist));
 }
 
-void wb_init(t_widgetbehavior *wb, t_getrectfn gr, t_clickfn cl)
+void iemgui_wb_init(t_widgetbehavior *wb, t_getrectfn gr, t_clickfn cl,
+    t_focusfn f)
 {
     wb->w_getrectfn = gr;
     wb->w_displacefn = iemgui_displace;
@@ -1506,6 +1507,7 @@ void wb_init(t_widgetbehavior *wb, t_getrectfn gr, t_clickfn cl)
     wb->w_visfn = iemgui_vis;
     wb->w_clickfn = cl;
     wb->w_displacefnwtag = iemgui_displace_withtag;
+    wb->w_focusfn = f;
 }
 
 const char *iemgui_typeface(t_iemgui *x)

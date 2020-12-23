@@ -179,7 +179,6 @@ typedef struct _vu
 typedef struct _my_numbox
 {
     t_iemgui x_gui;
-    t_clock  *x_clock_reset;
     t_clock  *x_clock_wait;
     double   x_val;
     double   x_min;
@@ -194,7 +193,7 @@ typedef struct _my_numbox
     int      x_tmpfontsize; /* temporary value for scalehandle */
     int      x_num_fontsize;/* font size for the number only that should
                                automatically adjust to the box size */
-    int      x_focused;     /* helps us determine when and how we are editing value
+    int      x_focused;     /* helps us determine when user is editing value
                                0 no focus, 1 keyboard focus, 2 mouse focus */
     int      x_log_height;
     int      x_drawstyle;  /* 0 default, 1 just frame, 2, just arrow, 3 number only */
@@ -277,7 +276,8 @@ EXTERN void iemgui_draw_new(t_iemgui *x);
 EXTERN void iemgui_draw_config(t_iemgui *x);
 EXTERN void iemgui_draw_move(t_iemgui *x);
 EXTERN void iemgui_draw_erase(t_iemgui *x);
-EXTERN void wb_init(t_widgetbehavior *wb, t_getrectfn gr, t_clickfn cl); // rename this to iemgui_wb_init
+EXTERN void iemgui_wb_init(t_widgetbehavior *wb, t_getrectfn gr, t_clickfn cl,
+    t_focusfn f); // rename this to iemgui_wb_init
 
 extern t_symbol *s_empty;
 EXTERN const char *selection_color;

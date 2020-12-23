@@ -307,6 +307,12 @@ int gobj_click(t_gobj *x, struct _glist *glist,
     else return (0);
 }
 
+void gobj_focus(t_gobj *x, struct _glist *glist, int state)
+{
+    if (x->g_pd->c_wb && x->g_pd->c_wb->w_focusfn)
+        (*x->g_pd->c_wb->w_focusfn)(x, glist, state);
+}
+
 /* ------------------------ managing the selection ----------------- */
 
 // direction -1 = lower, 1 = raise
@@ -3686,10 +3692,18 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
 
     canvas_undo_already_set_move = 0;
 
-    // if keyboard was grabbed, notify grabber and cancel the grab
     if (doit && x->gl_editor->e_grab && x->gl_editor->e_keyfn)
     {
-        (* x->gl_editor->e_keyfn) (x->gl_editor->e_grab, 0);
+            /* For reasons unclear to me, Pd Vanilla sends a sentinel value
+               "0" to the keyfn of an object to signal it has lost focus. */
+        (*x->gl_editor->e_keyfn) (x->gl_editor->e_grab, 0);
+            /* Going forward, let's use the much cleaner, self-documenting
+               interface of calling the object's focusfn with state = 0.
+               We're assuming that all classes which have a focusfn
+               also set a keyfn; all current gobjs that use glist_grab do this.
+               But if that changes we'll need to decouple the following call
+               from this conditional. */
+        gobj_focus(x->gl_editor->e_grab, x, 0);
         glist_grab(x, 0, 0, 0, 0, 0, 0);
     }
 
@@ -5365,6 +5379,17 @@ void canvas_mouseup(t_canvas *x,
     if (canvas_last_glist_mod == -1)
         canvas_doclick(x, xpos, ypos, 0,
             (glob_shift + glob_ctrl*2 + glob_alt*4), 0);
+
+    /* if an object has grabbed focus, go ahead and call the clickfn for the
+       mouseup event.
+       For now (and for compatibility) we abuse the "dbl" parameter which
+       apparently isn't used by anything. Later figure out how to make this
+       look like a half-decent event callback interface without breaking
+       everything */
+    if (x->gl_editor->e_grab)
+        gobj_click(x->gl_editor->e_grab, x, xpos, ypos, glob_shift, glob_alt,
+        1, 0);
+
     // now dispatch to any click listeners
     canvas_dispatch_mouseclick(0., xpos, ypos, which);
 }
@@ -5633,15 +5658,15 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         if (x->gl_editor->e_grab)
         {
             if (x->gl_editor->e_keyfn && keynum && focus)
-                (* x->gl_editor->e_keyfn)
+                (*x->gl_editor->e_keyfn)
                     (x->gl_editor->e_grab, (t_float)keynum);
-          	if (x->gl_editor->e_keynameafn && gotkeysym && focus)
-          	{
-          		at[0] = av[0];
-            	SETFLOAT(at, down);
-            	SETSYMBOL(at+1, gotkeysym);
-            	(* x->gl_editor->e_keynameafn) (x->gl_editor->e_grab, 0, 2, at);
-          	}
+            if (x->gl_editor->e_keynameafn && gotkeysym && focus)
+            {
+                at[0] = av[0];
+                SETFLOAT(at, down);
+                SETSYMBOL(at+1, gotkeysym);
+                (*x->gl_editor->e_keynameafn)(x->gl_editor->e_grab, 0, 2, at);
+            }
         }
             /* if a text editor is open send the key on, as long as
             it is either "real" (has a key number) or else is an arrow key. */
@@ -8464,8 +8489,38 @@ static void canvas_buftotext(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
     binbuf_clear(newobjbuf);
 }
 
+    /* just a single global... we'll put this in glist later */
+glist_last_focused_gobj;
+
+static void canvas_focusobj(t_canvas *x)
+{
+    t_gobj *y;
+        /* let's just start with a single time through the thingy */
+    if (glist_last_focused_gobj)
+    {
+        y = glist_last_focused_gobj;
+        gobj_focus(y, x, 0);
+        y = y->g_next;
+    }
+    else
+    {
+        y = x->gl_list;
+    }
+    for (; y; y = y->g_next)
+    {
+        /* just make focusfn return int so we can know if it got the focus */
+        if (y->g_pd->c_wb && y->g_pd->c_wb->w_focusfn)
+        {
+            gobj_focus(y, x, 1);
+            glist_last_focused_gobj = y;
+            break;
+        }
+    }
+}
+
 void g_editor_setup(void)
 {
+
 /* ------------------------ events ---------------------------------- */
     class_addmethod(canvas_class, (t_method)canvas_mousedown, gensym("mouse"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
@@ -8493,6 +8548,8 @@ void g_editor_setup(void)
         gensym("obj_addtobuf"), A_GIMME, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_buftotext,
         gensym("obj_buftotext"), A_NULL);
+    class_addmethod(canvas_class, (t_method)canvas_focusobj,
+        gensym("focus"), A_NULL);
 /* ------------------------ menu actions ---------------------------- */
     class_addmethod(canvas_class, (t_method)canvas_menuclose,
         gensym("menuclose"), A_DEFFLOAT, 0);
