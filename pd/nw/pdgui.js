@@ -2706,6 +2706,9 @@ function gui_atom_redraw_border(cid, tag, type, width, height) {
 function gui_canvas_line(cid,tag,type,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) {
     gui(cid).get_elem("patchsvg")
     .append(function(frag) {
+        // If our gui preset has the substring "vanilla", just use straight
+        // cords.
+        var vanilla = skin.get_name().indexOf("vanilla") != -1;
         var svg = get_item(cid, "patchsvg"),
         // xoff is for making sure straight lines are crisp.  An SVG stroke
         // straddles the coordinate, with 1/2 the width on each side.
@@ -2713,7 +2716,12 @@ function gui_canvas_line(cid,tag,type,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) {
         // the stroke to the pixel grid.
         // Signal cords are 2 px wide = 1px on each side-- no need for x-offset.
             xoff = type === 'signal' ? 0 : 0.5,
-            d_array = ["M", p1 + xoff, p2 + xoff,
+            d_array = vanilla ?
+                      ["M", p1 + xoff, p2 + xoff, p9 + xoff, p10 + xoff]
+
+                      :
+
+		      ["M", p1 + xoff, p2 + xoff,
                        "Q", p3 + xoff, p4 + xoff, p5 + xoff, p6 + xoff,
                        "Q", p7 + xoff, p8 + xoff, p9 + xoff, p10 + xoff],
             path;
@@ -2759,12 +2767,19 @@ function gui_canvas_update_line(cid, tag, x1, y1, x2, y2, yoff) {
     // It should also suppress a call here to update that line, but it
     // currently doesn't. So we check for existence.
     gui(cid).get_elem(tag, function(e) {
-        var halfx = parseInt((x2 - x1)/2),
+        // see gui_canvas_line for use of vanilla gui preset
+        var vanilla = skin.get_name().indexOf("vanilla") != -1,
+            halfx = parseInt((x2 - x1)/2),
             halfy = parseInt((y2 - y1)/2),
             xoff, // see comment in gui_canvas_line about xoff
             d_array;
         xoff = e.classList.contains("signal") ? 0: 0.5;
-        d_array = ["M",x1+xoff,y1+xoff,
+        d_array = vanilla ?
+                  ["M", x1 + xoff, y1 + xoff, x2 + xoff, y2 + xoff]
+
+                  :
+
+                  ["M",x1+xoff,y1+xoff,
                    "Q",x1+xoff,y1+yoff+xoff,x1+halfx+xoff,y1+halfy+xoff,
                    "Q",x2+xoff,y2-yoff+xoff,x2+xoff,y2+xoff];
         configure_item(e, { d: d_array.join(" ") });
@@ -6192,6 +6207,9 @@ var skin = exports.skin = (function () {
         get: function () {
             post("getting preset: " + dir + preset + ".css");
             return dir + preset + ".css";
+        },
+        get_name: function() {
+            return preset;
         },
         set: function (name) {
             // ag: if the preset doesn't exist (e.g., user preset that
