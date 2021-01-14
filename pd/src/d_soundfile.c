@@ -1684,7 +1684,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     {
             /* figure out what to resize to */
         long poswas, eofis, framesinfile;
-        
+
         poswas = lseek(fd, 0, SEEK_CUR);
         eofis = lseek(fd, 0, SEEK_END);
         if (poswas < 0 || eofis < 0 || eofis < poswas)
@@ -1707,7 +1707,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
                 (info.channels * info.bytespersample);
         }
         finalsize = framesinfile;
-        for (i = 0; i < argc; i++)
+        for (i = 0; i < ac; i++)
         {
             int vecsize;
 
@@ -1736,7 +1736,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         nitems = fread(sampbuf, info.channels * info.bytespersample, thisread,
             fp);
         if (nitems <= 0) break;
-        soundfile_xferin_float(info.channels, argc, (t_float **)vecs, itemsread,
+        soundfile_xferin_float(info.channels, ac, (t_float **)vecs, itemsread,
             (unsigned char *)sampbuf, nitems, info.bytespersample,
             info.bigendian, sizeof(t_word)/sizeof(t_sample));
         itemsread += nitems;
