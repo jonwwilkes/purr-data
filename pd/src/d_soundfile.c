@@ -1939,12 +1939,6 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     }
     return ((float)itemswritten); 
 usage:
-    post("usage: write [flags] filename tablename...");
-    post("flags: -skip <n> -nframes <n> -bytes <n> -wave -aiff -nextstep ...");
-    post("-big -little -normalize");
-    post("(defaults to a 16-bit wave file).");
-    postatom(original_argc, original_argv);
-    endpost();
 fail:
     if (fd >= 0)
         sys_close(fd);
