@@ -116,6 +116,7 @@ windows_i386_innosetup:
     BUILD_TYPE_FLAG: -Z
   script:
     - echo `pwd`
+    - export TERM=xterm
     - *build_all
     - *test_windows
   artifacts:
