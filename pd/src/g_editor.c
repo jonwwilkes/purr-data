@@ -256,8 +256,8 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
     if (ob = pd_checkobject(&x->g_pd))
     {
         /* return true if the text box should be drawn.  We don't show text
-        boxes inside graphs---except comments, if we're doing the new
-        (goprect) style. */
+        boxes inside graphs---except comments and messages, if we're doing the
+        new (goprect) style. */
         //fprintf(stderr,"pd_checkobject %zx\n", x);
         /*fprintf(stderr,"pd_checkobject %d %d %d %d %d %d %d\n",
             glist->gl_havewindow, 
@@ -283,9 +283,11 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             (ob->te_pd != canvas_class &&
                 ob->te_pd->c_wb != &text_widgetbehavior) ||
             (ob->te_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
-            (glist->gl_goprect && (ob->te_type == T_TEXT)));
+            (glist->gl_goprect && (ob->te_type == T_TEXT ||
+                ob->te_type == T_MESSAGE)));
     }
-    else {
+    else
+    {
         //fprintf(stderr,"else return 1\n");
         return (1);
     }
