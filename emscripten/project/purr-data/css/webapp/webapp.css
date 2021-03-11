@@ -7,6 +7,10 @@
     overflow-y: scroll;    	
 }
 
+#container {
+    overflow: hidden;
+}
+
 #console_bottom{
     position: relative !important;
     top: 0px !important;
