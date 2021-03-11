@@ -91,15 +91,15 @@ make emscripten
 - Fix or disable some of the global menu items not working.
 - Fix graphical arrays being opened if the patch font size changes. 
 - Ask for saving the patch when the user closes an edited patch.
-- Make the GUI(e.g. bang, toggle) property dialog window work.
-- Make the dialog windows(e.g. property, text) appear in the right side of the patch instead of the left side bar.
+- Make the GUI (e.g. bang, toggle) property dialog window work.
+- Make the dialog windows (e.g. property, text) appear in the right side of the patch instead of the left side bar.
 - Merge patch menu into the global menu and make it work depending on the focus of patches.
 - Style the patch window menu bar so it can show the focus state and add some buttons (e.g. close) for convenience.
 - Make the patch window resizable by dragging its border.
 - Make the patch window rearrangeable by dragging its menu bar.
 - Improve the file manager so the files/folders can be added/renamed/deleted.
 - Clean the frontend codebase and organize the file system.
-- Make the work storable and sharable between users.
+- Make the work storable and shareable between users.
 
 ## Reporting Bugs
 If you find any bugs, please let us know. You can contact using the [mailing list](http://disis.music.vt.edu/listinfo/l2ork-dev) or create an [issue](https://git.purrdata.net/jwilkes/purr-data/-/issues).
