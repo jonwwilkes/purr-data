@@ -1,9 +1,9 @@
 {
     "name": "pd-webapp",
     "version": "1.0.0",
-    "scripts" : { 
-        "start" : "serve",
-        "build" : "browserify -i nw.gui --s pdbundle browserify_entries.js -o dist/bundle.js"
+    "scripts": {
+        "start": "serve",
+        "build": "browserify -i nw.gui --s pdbundle browserify_entries.js -o dist/bundle.js"
     },
     "devDependencies": {
         "browserify": "^17.0.0",
