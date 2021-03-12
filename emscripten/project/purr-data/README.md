@@ -69,7 +69,22 @@ cd purr-data
 git checkout emscripten
 make emscripten
 ```
+### Setting up the project (Windows)
+```
+Method 1
 
+- git clone https://git.purrdata.net/jwilkes/purr-data.git
+- cd purr-data
+- run command npm install.
+- Change directory to purr-data/emscripten/project/purr-data.
+- run command npm run build.
+- run command npm start.
+
+Method 2
+
+- Follow the steps given in the link inorder to install Ubuntu LTS (https://docs.microsoft.com/en-us/windows/wsl/) .
+- Then follow the steps mentioned in above sections for Linux.
+```
 ### Running Purr Data in a web browser
 - After the building is successfully completed, visit http://localhost:5000 in your browser.
 - You can run `npm start` under `purr-data/emscripten/project/purr-data` to run the app again.
