@@ -26,6 +26,14 @@
     background-color: red !important;	
 }
 
+#sidebar-collapse{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 5;
+    color: #007BFF;
+}
+
 #sidebar-files ul{
     list-style-type: none;
     padding-left: 30px;
@@ -209,7 +217,7 @@ li .hr{
 
 #windows{
     max-height: 100vh !important;
-    max-width: 90vw !important;
+    max-width: 100vw !important;
 }
 
 #canvas-content{	
