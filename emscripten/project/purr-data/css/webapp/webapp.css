@@ -274,7 +274,12 @@ li .hr{
 
 
 .dsp_toggle{
-    margin-left: 20px;
+   
+    display: flex;
+    float: right;
+    justify-content: flex-end;
+    min-width: 60%;
+    margin-left: 15px;
 }
 
 /* Bootstrap */	
