@@ -214,7 +214,8 @@ li .hr{
 
 #canvas-content{	
     height: 70%;	
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     border-top-width: 0ch;
 }
 
