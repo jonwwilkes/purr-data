@@ -7,10 +7,11 @@
 		<meta name="description" content="Purr Data compiled for web with Emscripten" />
 		<meta name="keywords" content="purr-data" />
 		<meta name="generator" content="emsripten" />
-	
+		
 		<link rel="stylesheet" type="text/css" href="./css/dejavu.css">
 		<link id="page_style" rel="stylesheet" type="text/css" href="./css/default.css">
 		<link rel="stylesheet" type="text/css" href="./css/webapp/webapp.css">
+		<link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
 	</head>
 
 	<body id="container">
@@ -40,13 +41,13 @@
 			<div class="card" id="sidebar">
 				<div class="card-body text-center" id="sidebar-body">
 					<div id="pd-info">
-						<img src="https://agraef.github.io/purr-data-intro/purr.png">			
+						<img src="https://agraef.github.io/purr-data-intro/purr.png" alt="purr-data-logo">
 						<h4>Purr Data</h4>
 					</div>
 					<hr>
 					<div id="sidebar-body-dialog"></div>
 					<hr>
-					<div class="d-flex">
+					<div class="d-flex ml-3">
 						<i class="fa fa fa-volume-up text-primary" aria-hidden="true"></i>
 						<h5>DSP</h5>
 						<label class="dsp_toggle">
@@ -57,7 +58,7 @@
 					</div>
 					<hr>
 					<div>
-						<div class="d-flex">
+						<div class="d-flex ml-3">
 							<i class="fa fa-folder-open-o text-primary" aria-hidden="true"></i>
 							<h5>Files</h5>
 							<i class="fa fa-refresh ml-auto text-primary" id="reload-i" aria-hidden="true"
@@ -553,8 +554,6 @@
 
 
 	<!-- Bootstrap -->
-	<link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
-
 	<script src="libs/bootstrap/popper.min.js"></script>
 
 	<script src="libs/bootstrap/bootstrap.min.js"></script>

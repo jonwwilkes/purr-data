@@ -13,3 +13,6 @@ main.wasm
 # ignore copied files
 components/dialogs/dialogs_*.html
 css/*.css
+
+# ignore build files
+dist/
