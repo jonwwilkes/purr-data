@@ -103,7 +103,7 @@ body {
 }
 
 .dsp_toggle input:checked + span {
-    box-shadow: inset 0 0 0 0.73em #4cd964;
+    box-shadow: inset 0 0 0 0.73em blue;
 }
 
 .dsp_toggle input:checked + span:after {
@@ -128,7 +128,7 @@ body {
 }
 
 .dsp_toggle input:focus:checked + span {
-    box-shadow: inset 0 0 0 0.73em #33be4b;
+    box-shadow: inset 0 0 0 0.73em blue;
 }
 
 /* reset accessibility style on hover */
@@ -144,7 +144,7 @@ body {
 }
 
 .dsp_toggle:hover input:focus:checked + span {
-    box-shadow: inset 0 0 0 0.73em #4cd964;
+    box-shadow: inset 0 0 0 0.73em blue;
 }
 
 #printout {
