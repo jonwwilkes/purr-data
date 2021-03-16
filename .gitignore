@@ -41,3 +41,7 @@ CVS
 .DS_Store
 *.dmg
 .vscode/
+Pd-l2ork-20210316.tar.bz2
+emscripten/build
+externals/**/*.wasm
+pd/extra/**/*.wasm
