@@ -247,6 +247,7 @@ li .hr{
     min-height: 100%;
     overflow: visible;
     margin-top: 35px;
+    cursor: pointer;
 }	
     
 .patch_window_svg > svg{
