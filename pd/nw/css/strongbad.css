@@ -81,7 +81,7 @@ mark.console_find_current {
 }
 
 mark.console_find_highlighted {
-    background: red;
+    background: yellow;
 }
 
 #console_find {
