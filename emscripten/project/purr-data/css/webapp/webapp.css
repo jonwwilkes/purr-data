@@ -277,6 +277,10 @@ li .hr{
     margin-left: 20px;
 }
 
+#sidebar-body {
+    overflow: auto;
+}
+
 /* Bootstrap */	
 .container-fluid{	
     background-color: transparent;
