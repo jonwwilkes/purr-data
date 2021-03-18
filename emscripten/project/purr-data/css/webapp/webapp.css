@@ -239,17 +239,16 @@ li .hr{
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
+    border-right: 2px solid #858688;
 }	
 
 .patch_window_svg{
     background-color: #f6f6f6;
-    min-height: 100%;
     overflow: visible;
     margin-top: 35px;
 }	
     
 .patch_window_svg > svg{
-    min-height: 100%;
     position: relative;	
     margin-top: -1px;	
     margin-left: -1px;	
@@ -257,9 +256,7 @@ li .hr{
 }	
 
 .patch-holder{
-    height: 100%;
     font-family: Dejavu Sans Mono !important;
-    border-right: 2px solid #858688;
 }
 
 .patch-filename{
