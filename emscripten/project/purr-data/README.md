@@ -107,8 +107,8 @@ Method 2
 - Fix graphical arrays being opened if the patch font size changes. 
 - Ask for saving the patch when the user closes an edited patch.
 - Make the GUI(e.g. bang, toggle) property dialog window work.
-- Make the dialog windows(e.g. property, text) appear in the right side of the patch instead of the left side bar.
-- Merge patch menu into the global menu and make it work depending on the focus of patches.
+- Make the dialog windows(e.g. property, text) appear on the right side of the patch instead of the left sidebar.
+- Merge the patch menu into the global menu and make it work depending on the focus of patches.
 - Style the patch window menu bar so it can show the focus state and add some buttons (e.g. close) for convenience.
 - Make the patch window resizable by dragging its border.
 - Make the patch window rearrangeable by dragging its menu bar.
