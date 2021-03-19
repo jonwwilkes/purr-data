@@ -139,7 +139,8 @@ function add_shortcuts(cid){
         shortcut += e.altKey ? "alt+": "";
         // Add key
         shortcut += e.key.toLowerCase();
-        if(window.shortkeys[cid].hasOwnProperty(shortcut)){            
+        if(window.shortkeys[cid].hasOwnProperty(shortcut)){ 
+            e.preventDefault();           
             window.shortkeys[cid][shortcut].click();
         }
     }
