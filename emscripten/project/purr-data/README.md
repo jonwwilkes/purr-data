@@ -19,7 +19,7 @@ This document describes the work that was done under [Google Summer of Code 2020
 
 [Purr Data](https://agraef.github.io/purr-data/) serves the same purpose, but offers a new and much improved graphical user interface and includes many 3rd party plug-ins. Like Pd, it runs on Linux, macOS and Windows, and is open-source throughout.
 
-The goal of this project is to make the Purr Data run in a web browser so it can be more accessible to users and make their work more easily shared with other people.
+The goal of this project is to make the graphical programming environment Purr Data run in a web browser so it can be more accessible to users.
 
 You can try the current version from https://cuinjune-purr-data.glitch.me/
 
@@ -28,7 +28,7 @@ You can try the current version from https://cuinjune-purr-data.glitch.me/
 - The frontend part of the software has been mainly done by Hugo Carvalho (hugonvsc@gmail.com)
 
 ## Accomplished Milestones
-- Modified native Purr Data and libpd codebase to make them compatible with [Emscripten](https://emscripten.org/). (Zack)
+- Modified the native Purr Data and libpd codebase to make them compatible with [Emscripten](https://emscripten.org/). (Zack)
 - Modified and created Makefile to build for Emscripten and to generate WebAssembly(`.wasm`) binaries for external libraries. (Zack)
 - Cleaned the backend codebase and organized the file system so the project can be easily maintained. (Zack)
 - Modified the existing NW.js based source code to make them compatible with web browsers. (Hugo)
@@ -45,7 +45,7 @@ sudo apt-get install git automake cmake fakeroot dpkg-dev libgconf-2-4
 
 ### Installing Node.js (macOS, Linux)
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 ```
 
 ### Installing/Activating Emscripten (macOS, Linux)
@@ -56,9 +56,6 @@ git pull
 ./emsdk install latest
 ./emsdk activate latest
 source ./emsdk_env.sh
-./emsdk update-tags
-./emsdk install tot
-./emsdk activate tot
 cd ..
 ```
 
@@ -91,15 +88,15 @@ make emscripten
 - Fix or disable some of the global menu items not working.
 - Fix graphical arrays being opened if the patch font size changes. 
 - Ask for saving the patch when the user closes an edited patch.
-- Make the GUI(e.g. bang, toggle) property dialog window work.
-- Make the dialog windows(e.g. property, text) appear in the right side of the patch instead of the left side bar.
+- Make the GUI (e.g. bang, toggle) property dialog window work.
+- Make the dialog windows (e.g. property, text) appear in the right side of the patch instead of the left side bar.
 - Merge patch menu into the global menu and make it work depending on the focus of patches.
 - Style the patch window menu bar so it can show the focus state and add some buttons (e.g. close) for convenience.
 - Make the patch window resizable by dragging its border.
 - Make the patch window rearrangeable by dragging its menu bar.
 - Improve the file manager so the files/folders can be added/renamed/deleted.
 - Clean the frontend codebase and organize the file system.
-- Make the work storable and sharable between users.
+- Make the work storable and shareable between users.
 
 ## Reporting Bugs
 If you find any bugs, please let us know. You can contact using the [mailing list](http://disis.music.vt.edu/listinfo/l2ork-dev) or create an [issue](https://git.purrdata.net/jwilkes/purr-data/-/issues).
