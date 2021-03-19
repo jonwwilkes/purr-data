@@ -39,7 +39,7 @@ exports.menu = {
   "zoomhoriz": { key: "9", modifiers: cmd_or_ctrl + "+alt" },
   "zoomvert": { key: "9", modifiers: cmd_or_ctrl + "+shift" },
   "fullscreen": { key: (process.platform === "darwin") ? "f" : "F11",
-    modifiers: (process.platform === "darwin") ? "cmd+ctrl" : null },
+    modifiers: (process.platform === "darwin") ? "cmd+ctrl" : "" },
 
   "object": { key: "1", modifiers: cmd_or_ctrl },
   "msgbox": { key: "2", modifiers: cmd_or_ctrl },
@@ -105,7 +105,7 @@ exports.menu = {
   "zoomhoriz_web": { key: "9", modifiers: cmd_or_ctrl + "+alt" },
   "zoomvert_web": { key: "9", modifiers: cmd_or_ctrl + "+shift" },
   "fullscreen_web": { key: (process.platform === "darwin") ? "f" : "F11",
-    modifiers: (process.platform === "darwin") ? "cmd+ctrl" : null },
+    modifiers: (process.platform === "darwin") ? "cmd+ctrl" : "" },
 
   "object_web": { key: "1", modifiers: cmd_or_ctrl + "+alt" },
   "msgbox_web": { key: "2", modifiers: cmd_or_ctrl + "+alt" },
