@@ -45,7 +45,7 @@ sudo apt-get install git automake cmake fakeroot dpkg-dev libgconf-2-4
 
 ### Installing Node.js (macOS, Linux)
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 ```
 
 ### Installing/Activating Emscripten (macOS, Linux)
