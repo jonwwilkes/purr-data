@@ -77,7 +77,7 @@
 			</div>
 			
 			<a id="sidebar-collapse" class="m-2" data-toggle="collapse" data-target="#sidebar">
-				<i class="fa fa-bars"></i>
+				<i class="fa fa-angle-double-left"></i>
 			</a>
 
 			<!-- Canvas/Pd Windows -->
@@ -567,6 +567,17 @@
 	<script>
 		$(document).ready(function(){
 			$("#loading-modal").modal('show', {backdrop: 'static', keyboard: false},);
+		});
+	</script>
+
+	<script>
+		$(document).ready(function(){
+			$("#sidebar").on('shown.bs.collapse', function () {
+  				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-left").removeClass("fa-angle-double-right")
+			})
+			$("#sidebar").on('hidden.bs.collapse', function () {
+				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-right").removeClass("fa-angle-double-left")
+			})
 		});
 	</script>
 </body>
