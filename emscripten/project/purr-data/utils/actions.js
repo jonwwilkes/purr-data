@@ -134,13 +134,12 @@ function add_shortcuts(cid){
 
     document.onkeydown = function (e){
         // Check modifiers
-        var shortcut = e.ctrlKey ? "ctrl+": "";
-        shortcut += e.shiftKey ? "shift+": "";
-        shortcut += e.altKey ? "alt+": "";
+        var shortcut = e.ctrlKey ? "Ctrl+": "";
+        shortcut += e.shiftKey ? "Shift+": "";
+        shortcut += e.altKey ? "Alt+": "";
         // Add key
-        shortcut += e.key.toLowerCase();
-        if(window.shortkeys[cid].hasOwnProperty(shortcut)){ 
-            e.preventDefault();           
+        shortcut += e.key.toUpperCase();
+        if(window.shortkeys[cid].hasOwnProperty(shortcut)){            
             window.shortkeys[cid][shortcut].click();
         }
     }

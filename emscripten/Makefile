@@ -67,7 +67,7 @@ build: $(BUILD_PATH)
 project: $(INSTALL_PATH)
 	cp -rf $(PD_PATH)/nw/dialog_*.html $</components/dialogs/
 	cp -rf $(PD_PATH)/nw/css/*.css $</css/
-	cd $< && npm install && npm run-script build && npm start
+	cd $< && npm install && npm run build && npm start
 	
 clean:
 	find $(PURR_DIR)/externals -name "*.wasm" -type f -delete
