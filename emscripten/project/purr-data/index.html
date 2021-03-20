@@ -1,569 +1,541 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<title>Purr Data</title>
-		<meta name="description" content="Purr Data compiled for web with Emscripten" />
-		<meta name="keywords" content="purr-data" />
-		<meta name="generator" content="emsripten" />
-		
-		<link rel="stylesheet" type="text/css" href="./css/dejavu.css">
-		<link id="page_style" rel="stylesheet" type="text/css" href="./css/default.css">
-		<link rel="stylesheet" type="text/css" href="./css/webapp/webapp.css">
-		<link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
-	</head>
-
-	<body id="container">
-		<!-- Modal -->
-		<div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-body text-center">
-						<div class="spinner-border text-primary mt-2" style="width: 3rem; height: 3rem;" role="status">
-							<span class="sr-only">Loading...</span>
-						  </div>
-						  <h3 class="mt-4">Loading Purr Data...</h3>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="container-app" class="container-fluid">
-			<!-- Menu -->
-			<nav id="menu"></nav>
-
-			<!-- Content -->
-			<div class="d-flex content-webapp" id="content">
-
-			<!-- Sidebar -->
-			
-			<div class="card" id="sidebar">
-				<div class="card-body text-center" id="sidebar-body">
-					<div id="pd-info">
-						<img src="https://agraef.github.io/purr-data-intro/purr.png" alt="purr-data-logo">
-						<h4>Purr Data</h4>
-					</div>
-					<hr>
-					<div id="sidebar-body-dialog"></div>
-					<hr>
-					<div class="d-flex ml-3">
-						<i class="fa fa fa-volume-up text-primary" aria-hidden="true"></i>
-						<h5>DSP</h5>
-						<label class="dsp_toggle">
-							<input type="checkbox" id="dsp_control" name="dsp_control" value="on" />
-							<span></span>
-						</label>
-
-					</div>
-					<hr>
-					<div>
-						<div class="d-flex ml-3">
-							<i class="fa fa-folder-open-o text-primary" aria-hidden="true"></i>
-							<h5>Files</h5>
-							<i class="fa fa-refresh ml-auto mt-1 text-primary" id="reload-i" aria-hidden="true"
-							onclick="pdbundle.pdgui.update_file_ls()"></i>
-
-						</div>
-
-						<div class="text-left" id="sidebar-files">
-							<ul id="file_ls"></ul>
-							<div class="text-secondary text-center" id="file_ls_empty">
-								<p>No files found yet</p>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Canvas/Pd Windows -->
-			<div class="d-flex flex-column flex-fill" id="windows">
-
-				<!-- Canvas Container -->
-				<div class="flex-grow-1 card" id="canvas-content">
-					<div class="d-flex" id="canvas-container">
-					</div>
-				</div>
-
-				<!-- Console window -->
-				<div class="card" id="console-window">
-					<div class="card-header d-flex justify-content-between">
-						<h5>
-							<a data-toggle="collapse" data-parent="#windows" href="#console_bottom">Console</a>
-						</h5>
-
-						<div class="console-find-webapp" id="console_find" style="display:none;">
-							<div class="d-flex justify-content-end">
-								<label><input type="text" id="console_find_text" name="console_find_text"
-									defaultValue="Search in Console" style="width:10em;" placeholder="Search in Console"/>
-								</label>
-								<label class="highlight-find">Highlight All
-									<input type="checkbox" id="console_find_highlight" name="console_find_highlight"
-										onchange="console_find_highlight_all(this);" />
-								</label>
-							</div>
-						</div>
-
-					</div>
-
-			  
-					<div class="collapse show" id="console_bottom">
-					  <div class="card-block">
-						<div id="printout">
-							<pre id="p1" style="white-space: pre-wrap;"></pre>
-						</div>
-					  </div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	</div>
-
-	<script>
-
-		//--------------------- emscripten ----------------------------
-		var Module
-			= {
-			preRun: []
-			, postRun: []
-			, print: function (e) {
-				1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" "));
-				console.log(e);
-			}
-			, printErr: function (e) {
-				1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" "));
-				console.error(e)
-			}
-			, pd: {} // make pd object accessible from outside of the scope
-			, mainInit: function () { // called after Module is ready
-				Module.pd = new Module.Pd(); // instantiate Pd object
-				// Remove modal after everything loaded
-				$(document).ready(function(){
-					$("#loading-modal").modal('hide');
-				});
-
-				if (typeof Module.pd != "object") {
-					alert("Pd: failed to instantiate pd object");
-					console.error("Pd: failed to instantiate pd object");
-					Module.mainExit();
-					return;
-				}
-				var pd = Module.pd;
-				pd.setNoGui(false); // set to true if you don't use the pd's gui
-				// initializing webapp
-				initialize_webapp()
-
-
-				// create an AudioContext
-				var isWebAudioSupported = false;
-				var audioContextList = [];
-				(function () {
-					var AudioContext = self.AudioContext || self.webkitAudioContext || false;
-					if (AudioContext) {
-						isWebAudioSupported = true;
-						self.AudioContext = new Proxy(AudioContext, {
-							construct(target, args) {
-								var result = new target(...args);
-								audioContextList.push(result);
-								return result;
-							}
-						});
-					}
-				})();
-				if (isWebAudioSupported) {
-					console.log("Audio: successfully enabled");
-				}
-				else {
-					alert("The Web Audio API is not supported in this browser.");
-					console.error("Audio: failed to use the web audio");
-					Module.mainExit();
-					return;
-				}
-
-				// check if the web midi library exists and is supported
-				var isWebMidiSupported = false;
-				if (typeof WebMidi != "object") {
-					alert("Midi: failed to find the 'WebMidi' object");
-					console.error("Midi: failed to find the 'WebMidi' object");
-					Module.mainExit();
-					return;
-				}
-
-				// array of enabled midi device ids (without duplicates)
-				var midiInIds = [];
-				var midiOutIds = [];
-
-				// 10 input, 10 output device numbers to send with "pd midi-dialog"
-				// 0: no device, 1: first available device, 2: second available device...
-				var midiarr = [];
-
-				// enable midi
-				WebMidi.enable(function (err) {
-					if (err) {
-						// if the browser doesn't support web midi, one can still use pd without it
-						alert("The Web MIDI API is not supported in this browser.\nPlease check: https://github.com/djipco/webmidi#browser-support");
-						console.error("Midi: failed to enable midi", err);
-					}
-					else {
-						isWebMidiSupported = true;
-						console.log("Midi: successfully enabled");
-
-						// select all available input/output devices as default
-						midiInIds = [];
-						midiOutIds = [];
-						for (var i = 0; i < WebMidi.inputs.length; i++) {
-							midiInIds.push(WebMidi.inputs[i].id);
-						}
-						for (var i = 0; i < WebMidi.outputs.length; i++) {
-							midiOutIds.push(WebMidi.outputs[i].id);
-						}
-						midiarr = [];
-						for (var i = 0; i < 10; i++) {
-							var devno = i < midiInIds.length ? i + 1 : 0;
-							midiarr.push(devno);
-						}
-						for (var i = 0; i < 10; i++) {
-							var devno = i < midiOutIds.length ? i + 1 : 0;
-							midiarr.push(devno);
-						}
-						// called whenever input/output devices connection status changes
-						function onConnectionChanged() {
-							console.log("Midi: connection status changed");
-							pdbundle.pdgui.pdsend("pd midi-dialog", midiarr.join(" ")); // send message to pd
-						}
-						// make sure we get only one callback at a time
-						var timerId;
-						WebMidi.addListener("connected", function (e) {
-							clearTimeout(timerId);
-							timerId = setTimeout(() => onConnectionChanged(), 100);
-						});
-						WebMidi.addListener("disconnected", function (e) {
-							clearTimeout(timerId);
-							timerId = setTimeout(() => onConnectionChanged(), 100);
-						});
-					}
-				}, false); // not use sysex
-
-				// reinit pd (called by "pd audio-dialog" message)
-				Module.Pd.reinit = function (newinchan, newoutchan, newrate) {
-					if (pd.init(newinchan, newoutchan, newrate, pd.getTicksPerBuffer())) {
-
-						// print obtained settings
-						console.log("Pd: successfully reinitialized");
-						console.log("Pd: audio input channels: " + pd.getNumInChannels());
-						console.log("Pd: audio output channels: " + pd.getNumOutChannels());
-						console.log("Pd: audio sample rate: " + pd.getSampleRate());
-						console.log("Pd: audio ticks per buffer: " + pd.getTicksPerBuffer());
-					}
-					else {
-						// failed to reinit pd
-						alert("Pd: failed to reinitialize pd");
-						console.error("Pd: failed to reinitialize pd");
-						Module.mainExit();
-					}
-				}
-
-				// open midi (called by "pd midi-dialog" message)
-				// receives input/output arrays of only selected devices
-				// 0: first available device, 1: second available device...
-				Module.Pd.openMidi = function (midiinarr, midioutarr) {
-					if (!isWebMidiSupported)
-						return;
-
-					// if the selected device doesn't exist, use first available device instead
-					midiinarr = midiinarr.map(item => item >= WebMidi.inputs.length || item < 0 ? 0 : item);
-					midioutarr = midioutarr.map(item => item >= WebMidi.outputs.length || item < 0 ? 0 : item);
-
-					// save this settings so we can check again later when connection status changes 
-					midiarr = [];
-					for (var i = 0; i < 10; i++) {
-						var devno = i < midiinarr.length ? midiinarr[i] + 1 : 0;
-						midiarr.push(devno);
-					}
-					for (var i = 0; i < 10; i++) {
-						var devno = i < midioutarr.length ? midioutarr[i] + 1 : 0;
-						midiarr.push(devno);
-					}
-					// remove duplicates and convert device numbers to ids
-					midiinarr = Array.from(new Set(midiinarr));
-					midioutarr = Array.from(new Set(midioutarr));
-					midiInIds = midiinarr.map(item => WebMidi.inputs[item].id);
-					midiOutIds = midioutarr.map(item => WebMidi.outputs[item].id);
-
-					// print all selected devices to the console
-					for (var i = 0; i < midiInIds.length; i++) {
-						var input = WebMidi.getInputById(midiInIds[i]);
-						console.log("Midi: input" + (i + 1) + ": " + input.name);
-					}
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						console.log("Midi: output" + (i + 1) + ": " + output.name);
-					}
-					// receive midi messages from WebMidi and forward them to pd input
-					function receiveNoteOn(e) {
-						pd.sendNoteOn(e.channel, e.note.number, e.rawVelocity);
-					}
-
-					function receiveNoteOff(e) {
-						pd.sendNoteOn(e.channel, e.note.number, 0);
-					}
-
-					function receiveControlChange(e) {
-						pd.sendControlChange(e.channel, e.controller.number, e.value);
-					}
-
-					function receiveProgramChange(e) {
-						pd.sendProgramChange(e.channel, e.value + 1);
-					}
-
-					function receivePitchBend(e) {
-						// [bendin] takes 0 - 16383 while [bendout] returns -8192 - 8192
-						pd.sendPitchBend(e.channel, e.value * 8192 + 8192);
-					}
-
-					function receiveAftertouch(e) {
-						pd.sendAftertouch(e.channel, e.value * 127);
-					}
-
-					function receivePolyAftertouch(e) {
-						pd.sendPolyAftertouch(e.channel, e.note.number, e.value * 127);
-					}
-
-					for (var i = 0; i < midiInIds.length; i++) {
-						var input = WebMidi.getInputById(midiInIds[i]);
-						if (input) {
-							input.removeListener(); // remove all added listeners
-							input.addListener("noteon", "all", receiveNoteOn);
-							input.addListener("noteoff", "all", receiveNoteOff);
-							input.addListener("controlchange", "all", receiveControlChange);
-							input.addListener("programchange", "all", receiveProgramChange);
-							input.addListener("pitchbend", "all", receivePitchBend);
-							input.addListener("channelaftertouch", "all", receiveAftertouch);
-							input.addListener("keyaftertouch", "all", receivePolyAftertouch);
-						}
-					}
-				}
-
-				// get midi in device name
-				Module.Pd.getMidiInDeviceName = function (devno) {
-					if (!isWebMidiSupported)
-						return;
-					if (devno >= WebMidi.inputs.length || devno < 0) {
-						devno = 0;
-					}
-					var name = WebMidi.inputs[devno].name;
-					var lengthBytes = lengthBytesUTF8(name) + 1;
-					var stringOnWasmHeap = _malloc(lengthBytes);
-					stringToUTF8(name, stringOnWasmHeap, lengthBytes);
-					return stringOnWasmHeap;
-				}
-
-				// get midi out device name
-				Module.Pd.getMidiOutDeviceName = function (devno) {
-					if (!isWebMidiSupported)
-						return;
-					if (devno >= WebMidi.inputs.length || devno < 0) {
-						devno = 0;
-					}
-					var name = WebMidi.outputs[devno].name;
-					var lengthBytes = lengthBytesUTF8(name) + 1;
-					var stringOnWasmHeap = _malloc(lengthBytes);
-					stringToUTF8(name, stringOnWasmHeap, lengthBytes);
-					return stringOnWasmHeap;
-				}
-
-				// receive gui commands (only called in gui mode)
-				Module.Pd.receiveCommandBuffer = function (data) {
-					var command_buffer = {
-						next_command: ""
-					};
-					pdbundle.pdgui.perfect_parser(data, command_buffer);
-				}
-
-				// receive print messages (only called in no gui mode)
-				Module.Pd.receivePrint = function (s) {
-					console.log(s);
-				}
-
-				// receive from pd's subscribed sources
-				Module.Pd.receiveBang = function (source) {
-				}
-
-				Module.Pd.receiveFloat = function (source, value) {
-				}
-
-				Module.Pd.receiveSymbol = function (source, symbol) {
-				}
-
-				Module.Pd.receiveList = function (source, list) {
-				}
-
-				Module.Pd.receiveMessage = function (source, symbol, list) {
-				}
-
-				// receive midi messages from pd and forward them to WebMidi output
-				Module.Pd.receiveNoteOn = function (channel, pitch, velocity) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							output.playNote(pitch, channel, { rawVelocity: true, velocity: velocity });
-						}
-					}
-				}
-
-				Module.Pd.receiveControlChange = function (channel, controller, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							output.sendControlChange(controller, value, channel);
-						}
-					}
-				}
-
-				Module.Pd.receiveProgramChange = function (channel, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							output.sendProgramChange(value, channel);
-						}
-					}
-				}
-
-				Module.Pd.receivePitchBend = function (channel, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							// [bendin] takes 0 - 16383 while [bendout] returns -8192 - 8192
-							output.sendPitchBend(value / 8192, channel);
-						}
-					}
-				}
-
-				Module.Pd.receiveAftertouch = function (channel, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							output.sendChannelAftertouch(value / 127, channel);
-						}
-					}
-				}
-
-				Module.Pd.receivePolyAftertouch = function (channel, pitch, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
-						var output = WebMidi.getOutputById(midiOutIds[i]);
-						if (output) {
-							output.sendKeyAftertouch(pitch, channel, value / 127);
-						}
-					}
-				}
-
-				Module.Pd.receiveMidiByte = function (port, byte) {
-				}
-
-				// default audio settings
-				var numInChannels = 0; // supported values: 0, 1, 2
-				var numOutChannels = 2; // supported values: 1, 2
-				var sampleRate = 44100; // might change depending on browser/system
-				var ticksPerBuffer = 32; // supported values: 4, 8, 16, 32, 64, 128, 256
-
-				// open audio devices, init pd
-				if (pd.init(numInChannels, numOutChannels, sampleRate, ticksPerBuffer)) {
-
-					// print obtained settings
-					console.log("Pd: successfully initialized");
-					console.log("Pd: audio input channels:", pd.getNumInChannels());
-					console.log("Pd: audio output channels:", pd.getNumOutChannels());
-					console.log("Pd: audio sample rate:", pd.getSampleRate());
-					console.log("Pd: audio ticks per buffer:", pd.getTicksPerBuffer());
-
-					// add internals/externals help/search paths
-					var helpPath = "purr-data/doc/5.reference";
-					var extPath = "purr-data/extra";
-					pd.addToHelpPath(helpPath);
-					pd.addToSearchPath(extPath);
-					pd.addToHelpPath(extPath);
-					var dir = FS.readdir(extPath);
-					for (var i = 0; i < dir.length; i++) {
-						var item = dir[i];
-						if (item.charAt(0) != ".") {
-							var path = extPath + "/" + item;
-							pd.addToSearchPath(path); // externals can be created without path prefix
-							pd.addToHelpPath(path);
-						}
-					}
-				}
-				else { // failed to init pd
-					alert("Pd: failed to initialize pd");
-					console.error("Pd: failed to initialize pd");
-					Module.mainExit();
-				}
-			}
-			, mainLoop: function () { // called every frame (use for whatever)
-			}
-			, mainExit: function () { // this won't be called from emscripten
-				console.error("quiting emscripten...");
-				if (typeof Module.pd == "object") {
-					Module.pd.clear(); // clear pd, close audio devices
-					Module.pd.unsubscribeAll(); // unsubscribe all subscribed sources
-					Module.pd.delete(); // quit SDL, emscripten
-				}
-				if (typeof WebMidi == "object") {
-					WebMidi.disable(); // disable all midi devices
-				}
-			}
-		};
-
-
-			// Add pd module to pd
-	</script>
-
-	<!-- Pd Bundle -->
-	<script src="dist/bundle.js"></script>
-
-	<script src="index.js"></script>
-
-	<script src="/utils/console_search.js"></script>
-
-	<!-- Emscripten backend -->
-	<script src="main.js"></script>
-
-	<!-- Utils -->
-	<script src="utils/actions.js"></script>
-	<!-- <script src="utils/audio_ctx.js"></script>  -->
-	<script src="utils/console_find.js"></script>
-
-	<!-- Components -->
-	<script src="components/menu/menu.js"></script>
-	<script src="components/canvas/canvas.js"></script>
-
-
-	<!-- Libs -->
-	<!-- Webmidi -->
-	<script src="libs/webmidi/webmidi.min.js"></script>
-
-	<!-- jQuery -->
-	<script src="libs/jquery/jquery-3.6.0.min.js"></script>
-
-	<!-- jQuery UI -->
-	<script src="libs/jquery/jquery-ui.js"></script>
-
-	<!-- Fontawesome -->
-	<script src="libs/fa/fontawesome_1b8a796d74.js"></script>
-
-
-	<!-- Bootstrap -->
-	<script src="libs/bootstrap/popper.min.js"></script>
-
-	<script src="libs/bootstrap/bootstrap.min.js"></script>
-
-	<!-- Show modal on load -->
-	<script>
-		$(document).ready(function(){
-			$("#loading-modal").modal('show', {backdrop: 'static', keyboard: false},);
-		});
-	</script>
-</body>
-
+  <head>
+    <meta charset="utf-8" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Purr Data</title>
+    <meta name="description" content="Purr Data compiled for web with Emscripten" />
+    <meta name="keywords" content="purr-data" />
+    <meta name="generator" content="emsripten" />
+
+    <link rel="stylesheet" type="text/css" href="./css/dejavu.css" />
+    <link id="page_style" rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/webapp/webapp.css" />
+    <link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css" />
+  </head>
+
+  <body id="container">
+    <!-- Modal -->
+    <div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="spinner-border text-primary mt-2" style="width: 3rem; height: 3rem;" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h3 class="mt-4">Loading Purr Data...</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="container-app" class="container-fluid">
+      <!-- Menu -->
+      <nav id="menu"></nav>
+
+      <!-- Content -->
+      <div class="d-flex content-webapp" id="content">
+        <!-- Sidebar -->
+
+        <div class="card" id="sidebar">
+          <div class="card-body text-center" id="sidebar-body">
+            <!-- Pd logo -->
+            <div id="pd-info">
+              <img src="https://agraef.github.io/purr-data-intro/purr.png" alt="purr-data-logo" />
+              <h4>Purr Data</h4>
+            </div>
+            <hr />
+            <div id="sidebar-body-dialog"></div>
+            <hr />
+            <!-- DSP section -->
+            <div class="d-flex ml-3">
+              <i class="fa fa fa-volume-up text-primary" aria-hidden="true"></i>
+              <h5>DSP</h5>
+              <label class="dsp_toggle">
+                <input type="checkbox" id="dsp_control" name="dsp_control" value="on" />
+                <span></span>
+              </label>
+            </div>
+            <hr />
+            <!-- Files section -->
+            <div>
+              <div class="d-flex ml-3">
+                <i class="fa fa-folder-open-o text-primary" aria-hidden="true"></i>
+                <h5>Files</h5>
+                <i class="fa fa-refresh ml-auto mt-1 text-primary" id="reload-i" aria-hidden="true" onclick="pdbundle.pdgui.update_file_ls()"></i>
+              </div>
+
+              <div class="text-left" id="sidebar-files">
+                <ul id="file_ls"></ul>
+                <div class="text-secondary text-center" id="file_ls_empty">
+                  <p>No files found yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas/Pd Windows -->
+        <div class="d-flex flex-column flex-fill" id="windows">
+          <!-- Canvas Container -->
+          <div class="flex-grow-1 card" id="canvas-content">
+            <div class="d-flex" id="canvas-container"></div>
+          </div>
+
+          <!-- Console window -->
+          <div class="card" id="console-window">
+            <div class="card-header d-flex justify-content-between">
+              <h5>
+                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom">Console</a>
+              </h5>
+
+              <div class="console-find-webapp" id="console_find" style="display: none;">
+                <div class="d-flex justify-content-end">
+                  <label><input type="text" id="console_find_text" name="console_find_text" defaultValue="Search in Console" style="width: 10em;" placeholder="Search in Console" /> </label>
+                  <label class="highlight-find">
+                    Highlight All
+                    <input type="checkbox" id="console_find_highlight" name="console_find_highlight" onchange="console_find_highlight_all(this);" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="collapse show" id="console_bottom">
+              <div class="card-block">
+                <div id="printout">
+                  <pre id="p1" style="white-space: pre-wrap;"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      //--------------------- emscripten ----------------------------
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: function (e) {
+          1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" "));
+          console.log(e);
+        },
+        printErr: function (e) {
+          1 < arguments.length && (e = Array.prototype.slice.call(arguments).join(" "));
+          console.error(e);
+        },
+        pd: {}, // make pd object accessible from outside of the scope
+        mainInit: function () {
+          // called after Module is ready
+          Module.pd = new Module.Pd(); // instantiate Pd object
+          // Remove modal after everything loaded
+          $(document).ready(function () {
+            $("#loading-modal").modal("hide");
+          });
+
+          if (typeof Module.pd != "object") {
+            alert("Pd: failed to instantiate pd object");
+            console.error("Pd: failed to instantiate pd object");
+            Module.mainExit();
+            return;
+          }
+          var pd = Module.pd;
+          pd.setNoGui(false); // set to true if you don't use the pd's gui
+          // initializing webapp
+          initialize_webapp();
+
+          // create an AudioContext
+          var isWebAudioSupported = false;
+          var audioContextList = [];
+          (function () {
+            var AudioContext = self.AudioContext || self.webkitAudioContext || false;
+            if (AudioContext) {
+              isWebAudioSupported = true;
+              self.AudioContext = new Proxy(AudioContext, {
+                construct(target, args) {
+                  var result = new target(...args);
+                  audioContextList.push(result);
+                  return result;
+                },
+              });
+            }
+          })();
+          if (isWebAudioSupported) {
+            console.log("Audio: successfully enabled");
+          } else {
+            alert("The Web Audio API is not supported in this browser.");
+            console.error("Audio: failed to use the web audio");
+            Module.mainExit();
+            return;
+          }
+
+          // check if the web midi library exists and is supported
+          var isWebMidiSupported = false;
+          if (typeof WebMidi != "object") {
+            alert("Midi: failed to find the 'WebMidi' object");
+            console.error("Midi: failed to find the 'WebMidi' object");
+            Module.mainExit();
+            return;
+          }
+
+          // array of enabled midi device ids (without duplicates)
+          var midiInIds = [];
+          var midiOutIds = [];
+
+          // 10 input, 10 output device numbers to send with "pd midi-dialog"
+          // 0: no device, 1: first available device, 2: second available device...
+          var midiarr = [];
+
+          // enable midi
+          WebMidi.enable(function (err) {
+            if (err) {
+              // if the browser doesn't support web midi, one can still use pd without it
+              alert("The Web MIDI API is not supported in this browser.\nPlease check: https://github.com/djipco/webmidi#browser-support");
+              console.error("Midi: failed to enable midi", err);
+            } else {
+              isWebMidiSupported = true;
+              console.log("Midi: successfully enabled");
+
+              // select all available input/output devices as default
+              midiInIds = [];
+              midiOutIds = [];
+              for (var i = 0; i < WebMidi.inputs.length; i++) {
+                midiInIds.push(WebMidi.inputs[i].id);
+              }
+              for (var i = 0; i < WebMidi.outputs.length; i++) {
+                midiOutIds.push(WebMidi.outputs[i].id);
+              }
+              midiarr = [];
+              for (var i = 0; i < 10; i++) {
+                var devno = i < midiInIds.length ? i + 1 : 0;
+                midiarr.push(devno);
+              }
+              for (var i = 0; i < 10; i++) {
+                var devno = i < midiOutIds.length ? i + 1 : 0;
+                midiarr.push(devno);
+              }
+              // called whenever input/output devices connection status changes
+              function onConnectionChanged() {
+                console.log("Midi: connection status changed");
+                pdbundle.pdgui.pdsend("pd midi-dialog", midiarr.join(" ")); // send message to pd
+              }
+              // make sure we get only one callback at a time
+              var timerId;
+              WebMidi.addListener("connected", function (e) {
+                clearTimeout(timerId);
+                timerId = setTimeout(() => onConnectionChanged(), 100);
+              });
+              WebMidi.addListener("disconnected", function (e) {
+                clearTimeout(timerId);
+                timerId = setTimeout(() => onConnectionChanged(), 100);
+              });
+            }
+          }, false); // not use sysex
+
+          // reinit pd (called by "pd audio-dialog" message)
+          Module.Pd.reinit = function (newinchan, newoutchan, newrate) {
+            if (pd.init(newinchan, newoutchan, newrate, pd.getTicksPerBuffer())) {
+              // print obtained settings
+              console.log("Pd: successfully reinitialized");
+              console.log("Pd: audio input channels: " + pd.getNumInChannels());
+              console.log("Pd: audio output channels: " + pd.getNumOutChannels());
+              console.log("Pd: audio sample rate: " + pd.getSampleRate());
+              console.log("Pd: audio ticks per buffer: " + pd.getTicksPerBuffer());
+            } else {
+              // failed to reinit pd
+              alert("Pd: failed to reinitialize pd");
+              console.error("Pd: failed to reinitialize pd");
+              Module.mainExit();
+            }
+          };
+
+          // open midi (called by "pd midi-dialog" message)
+          // receives input/output arrays of only selected devices
+          // 0: first available device, 1: second available device...
+          Module.Pd.openMidi = function (midiinarr, midioutarr) {
+            if (!isWebMidiSupported) return;
+
+            // if the selected device doesn't exist, use first available device instead
+            midiinarr = midiinarr.map((item) => (item >= WebMidi.inputs.length || item < 0 ? 0 : item));
+            midioutarr = midioutarr.map((item) => (item >= WebMidi.outputs.length || item < 0 ? 0 : item));
+
+            // save this settings so we can check again later when connection status changes
+            midiarr = [];
+            for (var i = 0; i < 10; i++) {
+              var devno = i < midiinarr.length ? midiinarr[i] + 1 : 0;
+              midiarr.push(devno);
+            }
+            for (var i = 0; i < 10; i++) {
+              var devno = i < midioutarr.length ? midioutarr[i] + 1 : 0;
+              midiarr.push(devno);
+            }
+            // remove duplicates and convert device numbers to ids
+            midiinarr = Array.from(new Set(midiinarr));
+            midioutarr = Array.from(new Set(midioutarr));
+            midiInIds = midiinarr.map((item) => WebMidi.inputs[item].id);
+            midiOutIds = midioutarr.map((item) => WebMidi.outputs[item].id);
+
+            // print all selected devices to the console
+            for (var i = 0; i < midiInIds.length; i++) {
+              var input = WebMidi.getInputById(midiInIds[i]);
+              console.log("Midi: input" + (i + 1) + ": " + input.name);
+            }
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              console.log("Midi: output" + (i + 1) + ": " + output.name);
+            }
+            // receive midi messages from WebMidi and forward them to pd input
+            function receiveNoteOn(e) {
+              pd.sendNoteOn(e.channel, e.note.number, e.rawVelocity);
+            }
+
+            function receiveNoteOff(e) {
+              pd.sendNoteOn(e.channel, e.note.number, 0);
+            }
+
+            function receiveControlChange(e) {
+              pd.sendControlChange(e.channel, e.controller.number, e.value);
+            }
+
+            function receiveProgramChange(e) {
+              pd.sendProgramChange(e.channel, e.value + 1);
+            }
+
+            function receivePitchBend(e) {
+              // [bendin] takes 0 - 16383 while [bendout] returns -8192 - 8192
+              pd.sendPitchBend(e.channel, e.value * 8192 + 8192);
+            }
+
+            function receiveAftertouch(e) {
+              pd.sendAftertouch(e.channel, e.value * 127);
+            }
+
+            function receivePolyAftertouch(e) {
+              pd.sendPolyAftertouch(e.channel, e.note.number, e.value * 127);
+            }
+
+            for (var i = 0; i < midiInIds.length; i++) {
+              var input = WebMidi.getInputById(midiInIds[i]);
+              if (input) {
+                input.removeListener(); // remove all added listeners
+                input.addListener("noteon", "all", receiveNoteOn);
+                input.addListener("noteoff", "all", receiveNoteOff);
+                input.addListener("controlchange", "all", receiveControlChange);
+                input.addListener("programchange", "all", receiveProgramChange);
+                input.addListener("pitchbend", "all", receivePitchBend);
+                input.addListener("channelaftertouch", "all", receiveAftertouch);
+                input.addListener("keyaftertouch", "all", receivePolyAftertouch);
+              }
+            }
+          };
+
+          // get midi in device name
+          Module.Pd.getMidiInDeviceName = function (devno) {
+            if (!isWebMidiSupported) return;
+            if (devno >= WebMidi.inputs.length || devno < 0) {
+              devno = 0;
+            }
+            var name = WebMidi.inputs[devno].name;
+            var lengthBytes = lengthBytesUTF8(name) + 1;
+            var stringOnWasmHeap = _malloc(lengthBytes);
+            stringToUTF8(name, stringOnWasmHeap, lengthBytes);
+            return stringOnWasmHeap;
+          };
+
+          // get midi out device name
+          Module.Pd.getMidiOutDeviceName = function (devno) {
+            if (!isWebMidiSupported) return;
+            if (devno >= WebMidi.inputs.length || devno < 0) {
+              devno = 0;
+            }
+            var name = WebMidi.outputs[devno].name;
+            var lengthBytes = lengthBytesUTF8(name) + 1;
+            var stringOnWasmHeap = _malloc(lengthBytes);
+            stringToUTF8(name, stringOnWasmHeap, lengthBytes);
+            return stringOnWasmHeap;
+          };
+
+          // receive gui commands (only called in gui mode)
+          Module.Pd.receiveCommandBuffer = function (data) {
+            var command_buffer = {
+              next_command: "",
+            };
+            pdbundle.pdgui.perfect_parser(data, command_buffer);
+          };
+
+          // receive print messages (only called in no gui mode)
+          Module.Pd.receivePrint = function (s) {
+            console.log(s);
+          };
+
+          // receive from pd's subscribed sources
+          Module.Pd.receiveBang = function (source) {};
+
+          Module.Pd.receiveFloat = function (source, value) {};
+
+          Module.Pd.receiveSymbol = function (source, symbol) {};
+
+          Module.Pd.receiveList = function (source, list) {};
+
+          Module.Pd.receiveMessage = function (source, symbol, list) {};
+
+          // receive midi messages from pd and forward them to WebMidi output
+          Module.Pd.receiveNoteOn = function (channel, pitch, velocity) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                output.playNote(pitch, channel, { rawVelocity: true, velocity: velocity });
+              }
+            }
+          };
+
+          Module.Pd.receiveControlChange = function (channel, controller, value) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                output.sendControlChange(controller, value, channel);
+              }
+            }
+          };
+
+          Module.Pd.receiveProgramChange = function (channel, value) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                output.sendProgramChange(value, channel);
+              }
+            }
+          };
+
+          Module.Pd.receivePitchBend = function (channel, value) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                // [bendin] takes 0 - 16383 while [bendout] returns -8192 - 8192
+                output.sendPitchBend(value / 8192, channel);
+              }
+            }
+          };
+
+          Module.Pd.receiveAftertouch = function (channel, value) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                output.sendChannelAftertouch(value / 127, channel);
+              }
+            }
+          };
+
+          Module.Pd.receivePolyAftertouch = function (channel, pitch, value) {
+            for (var i = 0; i < midiOutIds.length; i++) {
+              var output = WebMidi.getOutputById(midiOutIds[i]);
+              if (output) {
+                output.sendKeyAftertouch(pitch, channel, value / 127);
+              }
+            }
+          };
+
+          Module.Pd.receiveMidiByte = function (port, byte) {};
+
+          // default audio settings
+          var numInChannels = 0; // supported values: 0, 1, 2
+          var numOutChannels = 2; // supported values: 1, 2
+          var sampleRate = 44100; // might change depending on browser/system
+          var ticksPerBuffer = 32; // supported values: 4, 8, 16, 32, 64, 128, 256
+
+          // open audio devices, init pd
+          if (pd.init(numInChannels, numOutChannels, sampleRate, ticksPerBuffer)) {
+            // print obtained settings
+            console.log("Pd: successfully initialized");
+            console.log("Pd: audio input channels:", pd.getNumInChannels());
+            console.log("Pd: audio output channels:", pd.getNumOutChannels());
+            console.log("Pd: audio sample rate:", pd.getSampleRate());
+            console.log("Pd: audio ticks per buffer:", pd.getTicksPerBuffer());
+
+            // add internals/externals help/search paths
+            var helpPath = "purr-data/doc/5.reference";
+            var extPath = "purr-data/extra";
+            pd.addToHelpPath(helpPath);
+            pd.addToSearchPath(extPath);
+            pd.addToHelpPath(extPath);
+            var dir = FS.readdir(extPath);
+            for (var i = 0; i < dir.length; i++) {
+              var item = dir[i];
+              if (item.charAt(0) != ".") {
+                var path = extPath + "/" + item;
+                pd.addToSearchPath(path); // externals can be created without path prefix
+                pd.addToHelpPath(path);
+              }
+            }
+          } else {
+            // failed to init pd
+            alert("Pd: failed to initialize pd");
+            console.error("Pd: failed to initialize pd");
+            Module.mainExit();
+          }
+        },
+        mainLoop: function () {
+          // called every frame (use for whatever)
+        },
+        mainExit: function () {
+          // this won't be called from emscripten
+          console.error("quiting emscripten...");
+          if (typeof Module.pd == "object") {
+            Module.pd.clear(); // clear pd, close audio devices
+            Module.pd.unsubscribeAll(); // unsubscribe all subscribed sources
+            Module.pd.delete(); // quit SDL, emscripten
+          }
+          if (typeof WebMidi == "object") {
+            WebMidi.disable(); // disable all midi devices
+          }
+        },
+      };
+
+      // Add pd module to pd
+    </script>
+
+    <!-- Pd Bundle -->
+    <script src="dist/bundle.js"></script>
+
+    <script src="index.js"></script>
+
+    <script src="/utils/console_search.js"></script>
+
+    <!-- Emscripten backend -->
+    <script src="main.js"></script>
+
+    <!-- Utils -->
+    <script src="utils/actions.js"></script>
+    <!-- <script src="utils/audio_ctx.js"></script>  -->
+    <script src="utils/console_find.js"></script>
+
+    <!-- Components -->
+    <script src="components/menu/menu.js"></script>
+    <script src="components/canvas/canvas.js"></script>
+
+    <!-- Libs -->
+    <!-- Webmidi -->
+    <script src="libs/webmidi/webmidi.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="libs/jquery/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="libs/jquery/jquery-ui.js"></script>
+
+    <!-- Fontawesome -->
+    <script src="libs/fa/fontawesome_1b8a796d74.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="libs/bootstrap/popper.min.js"></script>
+    <script src="libs/bootstrap/bootstrap.min.js"></script>
+
+    <!-- Show modal on load -->
+    <script>
+      $(document).ready(function () {
+        $("#loading-modal").modal("show", { backdrop: "static", keyboard: false });
+      });
+    </script>
+
+  </body>
 </html>
