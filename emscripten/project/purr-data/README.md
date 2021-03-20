@@ -19,7 +19,7 @@ This document describes the work that was done under [Google Summer of Code 2020
 
 [Purr Data](https://agraef.github.io/purr-data/) serves the same purpose, but offers a new and much improved graphical user interface and includes many 3rd party plug-ins. Like Pd, it runs on Linux, macOS and Windows, and is open-source throughout.
 
-The goal of this project is to make the Purr Data run in a web browser so it can be more accessible to users and make their work more easily shared with other people.
+The goal of this project is to make the graphical programming environment Purr Data run in a web browser so it can be more accessible to users.
 
 You can try the current version from https://cuinjune-purr-data.glitch.me/
 
@@ -28,7 +28,7 @@ You can try the current version from https://cuinjune-purr-data.glitch.me/
 - The frontend part of the software has been mainly done by Hugo Carvalho (hugonvsc@gmail.com)
 
 ## Accomplished Milestones
-- Modified native Purr Data and libpd codebase to make them compatible with [Emscripten](https://emscripten.org/). (Zack)
+- Modified the native Purr Data and libpd codebase to make them compatible with [Emscripten](https://emscripten.org/). (Zack)
 - Modified and created Makefile to build for Emscripten and to generate WebAssembly(`.wasm`) binaries for external libraries. (Zack)
 - Cleaned the backend codebase and organized the file system so the project can be easily maintained. (Zack)
 - Modified the existing NW.js based source code to make them compatible with web browsers. (Hugo)
@@ -56,9 +56,6 @@ git pull
 ./emsdk install latest
 ./emsdk activate latest
 source ./emsdk_env.sh
-./emsdk update-tags
-./emsdk install tot
-./emsdk activate tot
 cd ..
 ```
 
@@ -69,7 +66,22 @@ cd purr-data
 git checkout emscripten
 make emscripten
 ```
+### Setting up the project (Windows)
+```
+Method 1
 
+- git clone https://git.purrdata.net/jwilkes/purr-data.git
+- cd purr-data
+- run command npm install.
+- Change directory to purr-data/emscripten/project/purr-data.
+- run command npm run build.
+- run command npm start.
+
+Method 2
+
+- Follow the steps given in the link inorder to install Ubuntu LTS (https://docs.microsoft.com/en-us/windows/wsl/) .
+- Then follow the steps mentioned in above sections for Linux.
+```
 ### Running Purr Data in a web browser
 - After the building is successfully completed, visit http://localhost:5000 in your browser.
 - You can run `npm start` under `purr-data/emscripten/project/purr-data` to run the app again.
