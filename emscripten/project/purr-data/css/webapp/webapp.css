@@ -206,16 +206,8 @@ li .hr{
     max-width: 100vw !important;
 }
 
-<<<<<<< HEAD
 #canvas-content{	
     height: 70%;
-=======
-#canvas-content{
-    height: 70%;
-    overflow-y: scroll;
-    overflow-x: auto;
-    border-top-width: 0ch;
->>>>>>> emscripten
 }
 
 #canvas-content > .card-body{
@@ -239,14 +231,9 @@ li .hr{
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
-<<<<<<< HEAD
     border-right: 2px solid hsl(220, 1%, 53%);
     overflow: auto;
 }	
-=======
-    border-right: 2px solid #858688;
-}
->>>>>>> emscripten
 
 .patch_window_svg{
     background-color: #f6f6f6;
