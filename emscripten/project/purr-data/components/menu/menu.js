@@ -14,6 +14,8 @@ function menu_section_click(id) {
 
     // Show the current menu options
     var m_option = document.getElementById(id);
+    m_option.querySelectorAll("ul")[0].style.width = "40px";
+    m_option.querySelectorAll("ul")[0].style.position = "fixed";
     m_option.querySelectorAll("ul")[0].style.display = "block";
 
     // Listen to clicks on the page so can close the menu
