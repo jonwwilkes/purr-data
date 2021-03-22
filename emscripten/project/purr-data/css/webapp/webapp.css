@@ -28,12 +28,12 @@
 
 #sidebar-files ul{
     list-style-type: none;
-    padding-left: 30px;
     cursor: pointer;
+    padding: 0;
 }
 
 #sidebar-files ul li{
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 
 }
 
