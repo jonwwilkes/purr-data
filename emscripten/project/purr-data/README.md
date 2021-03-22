@@ -66,7 +66,22 @@ cd purr-data
 git checkout emscripten
 make emscripten
 ```
+### Setting up the project (Windows)
+```
+Method 1
 
+- git clone https://git.purrdata.net/jwilkes/purr-data.git
+- cd purr-data
+- run command npm install.
+- Change directory to purr-data/emscripten/project/purr-data.
+- run command npm run build.
+- run command npm start.
+
+Method 2
+
+- Follow the steps given in the link inorder to install Ubuntu LTS (https://docs.microsoft.com/en-us/windows/wsl/) .
+- Then follow the steps mentioned in above sections for Linux.
+```
 ### Running Purr Data in a web browser
 - After the building is successfully completed, visit http://localhost:5000 in your browser.
 - You can run `npm start` under `purr-data/emscripten/project/purr-data` to run the app again.
@@ -88,9 +103,9 @@ make emscripten
 - Fix or disable some of the global menu items not working.
 - Fix graphical arrays being opened if the patch font size changes. 
 - Ask for saving the patch when the user closes an edited patch.
-- Make the GUI (e.g. bang, toggle) property dialog window work.
-- Make the dialog windows (e.g. property, text) appear in the right side of the patch instead of the left side bar.
-- Merge patch menu into the global menu and make it work depending on the focus of patches.
+- Make the GUI(e.g. bang, toggle) property dialog window work.
+- Make the dialog windows(e.g. property, text) appear on the right side of the patch instead of the left sidebar.
+- Merge the patch menu into the global menu and make it work depending on the focus of patches.
 - Style the patch window menu bar so it can show the focus state and add some buttons (e.g. close) for convenience.
 - Make the patch window resizable by dragging its border.
 - Make the patch window rearrangeable by dragging its menu bar.
