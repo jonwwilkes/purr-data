@@ -7,7 +7,7 @@
 		<meta name="description" content="Purr Data compiled for web with Emscripten" />
 		<meta name="keywords" content="purr-data" />
 		<meta name="generator" content="emsripten" />
-	
+
 		<link rel="stylesheet" type="text/css" href="./css/dejavu.css">
 		<link id="page_style" rel="stylesheet" type="text/css" href="./css/default.css">
 		<link rel="stylesheet" type="text/css" href="./css/webapp/webapp.css">
@@ -21,10 +21,9 @@
 					<div class="modal-body text-center">
 						<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
 							<span class="sr-only">Loading...</span>
-						  </div>
-						  <h3>Loading Purr Data...</h3>
+				        </div>
+						<h3>Loading Purr Data...</h3>
 					</div>
-				</div>
 			</div>
 		</div>
 
@@ -36,11 +35,11 @@
 			<div class="d-flex content-webapp" id="content">
 
 			<!-- Sidebar -->
-			
+
 			<div class="card" id="sidebar">
 				<div class="card-body text-center" id="sidebar-body">
 					<div id="pd-info">
-						<img src="https://agraef.github.io/purr-data-intro/purr.png">			
+						<img src="https://agraef.github.io/purr-data-intro/purr.png">
 						<h4>Purr Data</h4>
 					</div>
 					<hr>
@@ -103,16 +102,21 @@
 								</label>
 							</div>
 						</div>
+						<div id='close' class='ml-3'>
+							<a data-toggle="collapse" data-parent="#windows" href="#console_bottom">
+								<i class="fa fa-angle-double-up" id='open-icon' onclick="rotate()"></i>
+							</a>
+						</div>
 
 					</div>
 
-			  
+
 					<div class="collapse show" id="console_bottom">
-					  <div class="card-block">
-						<div id="printout">
-							<pre id="p1" style="white-space: pre-wrap;"></pre>
+						<div class="card-block">
+							<div id="printout">
+								<pre id="p1" style="white-space: pre-wrap;"></pre>
+							</div>
 						</div>
-					  </div>
 					</div>
 				</div>
 			</div>
@@ -121,7 +125,6 @@
 	</div>
 
 	<script>
-
 		//--------------------- emscripten ----------------------------
 		var Module
 			= {
@@ -431,7 +434,7 @@
 				}
 
 				Module.Pd.receivePitchBend = function (channel, value) {
-					for (var i = 0; i < midiOutIds.length; i++) {
+				        for (var i = 0; i < midiOutIds.length; i++) {
 						var output = WebMidi.getOutputById(midiOutIds[i]);
 						if (output) {
 							// [bendin] takes 0 - 16383 while [bendout] returns -8192 - 8192
@@ -513,6 +516,12 @@
 				}
 			}
 		};
+		//Rotate Icon
+        function rotate() {
+        	var icon = document.getElementById("open-icon");
+        	icon.classList.toggle("rotate");
+
+        }
 
 
 			// Add pd module to pd

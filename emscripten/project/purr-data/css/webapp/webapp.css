@@ -7,6 +7,17 @@
     overflow-y: scroll;    	
 }
 
+/** Toggle Console Icon*/
+#close{
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+.rotate{
+    transform: rotate(180deg);
+    transition:0.5s ease all;
+}
+
 #console_bottom{
     position: relative !important;
     top: 0px !important;
@@ -17,6 +28,7 @@
     background-color: transparent !important;
     right: 0px;
 }
+
 .highlight-find{
     margin-left: 10px;
 }
