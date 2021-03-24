@@ -186,7 +186,7 @@ mark.console_find_current {
 }
 
 mark.console_find_highlighted {
-    background: yellow;
+    background: #6bd4e6;
 }
 
 #console_find {
