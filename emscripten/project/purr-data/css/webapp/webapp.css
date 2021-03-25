@@ -271,13 +271,9 @@ li .hr{
     margin-bottom: 5px;
 }
 
-#div-svg-p{
-    position: relative;
-    z-index: 999999;
-}
-
-.dsp_toggle{
-    margin-left: 20px;
+#div-svg-p{	
+    position: relative;	
+    z-index: 999999;	
 }
 
 /* Bootstrap */
