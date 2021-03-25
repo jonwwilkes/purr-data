@@ -85,7 +85,6 @@ nav {
     font-size: 14px;
     width: 100%;
     border: 1px solid #C0C2C4;
-    border-radius: 3px;
     z-index: 999999;
 }
 
@@ -275,6 +274,10 @@ li .hr{
 .container-fluid{
     background-color: transparent;
     padding: 0px !important;
+}
+
+.card {
+    border-radius: 0px !important;
 }
 
 .card-body{
