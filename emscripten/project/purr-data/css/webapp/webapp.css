@@ -243,21 +243,18 @@ li .hr{
 
 .patch_window_svg{
     background-color: #f6f6f6;
-    min-height: 100%;
     overflow: visible;
     margin-top: 35px;
 }
 
 .patch_window_svg > svg{
-    min-height: 100%;
-    position: relative;
-    margin-top: -1px;
-    margin-left: -1px;
-    overflow: visible;
-}
+    position: relative;	
+    margin-top: -1px;	
+    margin-left: -1px;	
+    overflow: visible;	
+}	
 
 .patch-holder{
-    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
