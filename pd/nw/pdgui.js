@@ -1232,8 +1232,7 @@ function gui_canvas_set_cordinspector(cid, state) {
 }
 
 function canvas_set_scrollbars(cid, scroll) {
-    patchwin[cid].window.document.body.style.
-        overflow = scroll ? "visible" : "hidden";
+    patchwin[cid].window.document.body.style.overflow = "hidden";
 }
 
 exports.canvas_set_scrollbars = canvas_set_scrollbars;
