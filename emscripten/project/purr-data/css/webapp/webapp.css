@@ -253,8 +253,9 @@ li .hr{
     background-color: #f6f6f6;
     overflow: visible;
     margin-top: 35px;
-}
-
+    cursor: pointer;
+}	
+    
 .patch_window_svg > svg{
     position: relative;	
     margin-top: -1px;	
