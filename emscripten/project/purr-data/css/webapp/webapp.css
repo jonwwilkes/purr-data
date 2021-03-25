@@ -231,6 +231,10 @@ li .hr{
     max-height: 30%;
 }
 
+#console-window a{
+    text-decoration: none;
+}
+
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
