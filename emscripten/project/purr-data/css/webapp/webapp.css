@@ -218,10 +218,9 @@ li .hr{
     max-width: 100vw !important;
 }
 
-#canvas-content{
-    height: 70%;
-    overflow-y: scroll;
-    overflow-x: auto;
+#canvas-content{	
+    height: 70%;	
+    overflow: auto;
     border-top-width: 0ch;
 }
 
