@@ -7,6 +7,10 @@
     overflow-y: scroll;
 }
 
+#container {
+    overflow: hidden;
+}
+
 #console_bottom{
     position: relative !important;
     top: 0px !important;
@@ -26,14 +30,22 @@
     background-color: red !important;
 }
 
+#sidebar-collapse{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 5;
+    color: #007BFF;
+}
+
 #sidebar-files ul{
     list-style-type: none;
-    padding-left: 30px;
     cursor: pointer;
+    padding: 0;
 }
 
 #sidebar-files ul li{
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 
 }
 
@@ -237,21 +249,19 @@ li .hr{
 
 .patch_window_svg{
     background-color: #f6f6f6;
-    min-height: 100%;
     overflow: visible;
     margin-top: 35px;
-}
-
+    cursor: pointer;
+}	
+    
 .patch_window_svg > svg{
-    min-height: 100%;
-    position: relative;
-    margin-top: -1px;
-    margin-left: -1px;
-    overflow: visible;
-}
+    position: relative;	
+    margin-top: -1px;	
+    margin-left: -1px;	
+    overflow: visible;	
+}	
 
 .patch-holder{
-    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
@@ -260,17 +270,17 @@ li .hr{
     margin-bottom: 5px;
 }
 
-#div-svg-p{
-    position: relative;
-    z-index: 999999;
+#div-svg-p{	
+    position: relative;	
+    z-index: 999999;	
 }
 
-.dsp_toggle{
-    margin-left: 20px;
+#sidebar-body {
+    overflow: auto;
 }
 
-/* Bootstrap */
-.container-fluid{
+/* Bootstrap */	
+.container-fluid{	
     background-color: transparent;
     padding: 0px !important;
 }
@@ -292,4 +302,5 @@ li .hr{
 #reload-i{
     font-size: 1em !important;
     cursor: pointer;
+    transition: transform 1s linear;
 }
