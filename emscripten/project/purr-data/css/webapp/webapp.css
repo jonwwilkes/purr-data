@@ -276,8 +276,12 @@ li .hr{
     z-index: 999999;	
 }
 
-/* Bootstrap */
-.container-fluid{
+#sidebar-body {
+    overflow: auto;
+}
+
+/* Bootstrap */	
+.container-fluid{	
     background-color: transparent;
     padding: 0px !important;
 }
