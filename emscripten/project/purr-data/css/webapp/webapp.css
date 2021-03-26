@@ -303,4 +303,5 @@ li .hr{
 #reload-i{
     font-size: 1em !important;
     cursor: pointer;
+    transition: transform 1s linear;
 }
