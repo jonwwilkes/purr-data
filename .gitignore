@@ -41,3 +41,7 @@ CVS
 .DS_Store
 *.dmg
 .vscode/
+*.tar.bz2
+emscripten/build
+externals/**/*.wasm
+pd/extra/**/*.wasm

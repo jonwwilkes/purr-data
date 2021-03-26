@@ -1,10 +1,14 @@
-.console-webapp {	
-    position: relative;	
-    top: 0px;	
-    left: 0px;	
-    right: 0px;	
-    bottom: 0px;	
-    overflow-y: scroll;    	
+.console-webapp {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: scroll;
+}
+
+#container {
+    overflow: hidden;
 }
 
 #console_bottom{
@@ -12,8 +16,8 @@
     top: 0px !important;
 }
 
-.console-find-webapp {	
-    position: relative !important;	
+.console-find-webapp {
+    position: relative !important;
     background-color: transparent !important;
     right: 0px;
 }
@@ -21,19 +25,27 @@
     margin-left: 10px;
 }
 
-#canvas_container{	
-    display: flex !important;	
-    background-color: red !important;	
+#canvas_container{
+    display: flex !important;
+    background-color: red !important;
+}
+
+#sidebar-collapse{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 5;
+    color: #007BFF;
 }
 
 #sidebar-files ul{
     list-style-type: none;
-    padding-left: 30px;
     cursor: pointer;
+    padding: 0;
 }
 
 #sidebar-files ul li{
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 
 }
 
@@ -41,124 +53,119 @@
     color: #007BFF;
 }
 
-#content {	
-    position: absolute;	
-    top: 24px;	
-}	
-    
-.content-webapp {	
-    height: 96%;
+#content {
+    position: relative;
+}
+
+.content-webapp {
+    height: calc(100vh - 38px);
     width: 100%;
-    margin-top: 10px;
-}	
-    
-#content-canvas {	
-    position: relative;	
-}	
-    
-/* Webapp Menu */	
-nav {	
-    position: fixed;	
-    top: 0px;	
-    z-index: 999999;	
-    width: 100%;	
-}	
-    
-.clearfix:after {	
-    content: '.';	
-    display: block;	
-    clear: both;	
-    height: 0;	
-    line-height: 0;	
-    font-size: 0;	
-    visibility: hidden;	
-    overflow: hidden;	
-}	
-    
-#patch-menu {	
-    width: 100%;	
-}	
-    
-.menu, .menu li ul, .patch-menu, .patch-menu li ul{	
-    background-color: #EFF0F1;	
-    margin: 0px;	
-    padding: 0px;	
-    list-style:none; 	
-    float:left;	
-    font-size: 14px;	
-    width: 100%;	
+}
+
+#content-canvas {
+    position: relative;
+}
+
+/* Webapp Menu */
+nav {
+    position: relative;
+    z-index: 999999;
+    width: 100%;
+}
+
+.clearfix:after {
+    content: '.';
+    display: block;
+    clear: both;
+    height: 0;
+    line-height: 0;
+    font-size: 0;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+#patch-menu {
+    width: 100%;
+}
+
+.menu, .menu li ul, .patch-menu, .patch-menu li ul{
+    background-color: #EFF0F1;
+    margin: 0px;
+    padding: 0px;
+    list-style:none;
+    float:left;
+    font-size: 14px;
+    width: 100%;
     border: 1px solid #C0C2C4;
-    border-radius: 3px;	
-    z-index: 999999;	
-}	
-    
-.menu li{	
-    display: none;	
-    position: relative;	
-    padding: 7px 10px;	
-    cursor: pointer;	
-}	
-    
-.patch-menu li{	
-    position: relative;	
-    padding: 5px 10px;	
-    cursor: pointer;	
-}	
-    
-.menu > li, .patch-menu > li {	
-    float: left;	
-}	
-    
-.menu > li:hover, .patch-menu > li:hover {	
-    float: left;	
-    background-color: #6bd4e6;	
-}	
-    
-.menu li ul, .patch-menu li ul{	
-    display: none;	
-    position: absolute;	
-    min-width: 250px;	
-}	
-    
-.menu li ul li:hover, .patch-menu li ul li:hover{	
-    background-color: #6bd4e6;	
-}	
-    
-    
-.menu li ul li ul{	
-    top: 0;	
-    left: 100%;	
-}	
-    
-.menu > li > ul > li span, .menu > li > ul > label > li span, .patch-menu > li > ul > li span {	
-    float: right;	
-    font-size: small;	
-    color: #777;	
-}	
-    
-    
-/* Input file */	
-.menu label input[type="file"] {	
-    display: none;	
-}	
-.menu label {	
-    margin: 0px;	
-    width: 100%;	
-    text-align: left;	
-}	
-    
-li .hr{	
-    display: block !important;	
-    margin: 0px;	
-    padding: 0px;	
-    width: 100%;	
-}	
-    
-.hr > hr{	
-    margin: 0px;	
-    padding: 0px;	
-}	
-  
+    border-radius: 3px;
+    z-index: 999999;
+}
+
+.menu li{
+    display: none;
+    position: relative;
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+.patch-menu li{
+    position: relative;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.menu > li, .patch-menu > li {
+    float: left;
+}
+
+.menu > li:hover, .patch-menu > li:hover {
+    float: left;
+    background-color: #6bd4e6;
+}
+
+.menu li ul, .patch-menu li ul{
+    display: none;
+    position: absolute;
+    min-width: 250px;
+}
+
+.menu li ul li:hover, .patch-menu li ul li:hover{
+    background-color: #6bd4e6;
+}
+
+.menu li ul li ul{
+    top: 0;
+    left: 100%;
+}
+
+.menu > li > ul > li span, .menu > li > ul > label > li span, .patch-menu > li > ul > li span {
+    float: right;
+    font-size: small;
+    color: #777;
+}
+
+/* Input file */
+.menu label input[type="file"] {
+    display: none;
+}
+.menu label {
+    margin: 0px;
+    width: 100%;
+    text-align: left;
+}
+
+li .hr{
+    display: block !important;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.hr > hr{
+    margin: 0px;
+    padding: 0px;
+}
+
 #pd-info{
     display: block;
 }
@@ -166,27 +173,27 @@ li .hr{
 #pd-info img{
     height: 50px;
 }
-    
-/* Popup */	
-#popup{	
-    background-color: #EFF0F1;	
-    margin: 0px;	
-    padding: 0px;	
-    font-size: 12px;	
-    border: 1px solid #C0C2C4;	
-    z-index: 999999;	
-    position: absolute;	
-    list-style:none; 	
-}	
-    
-#popup li{	
-    position: relative;	
-    padding: 5px 10px;	
-    cursor: pointer;	
-}	
-    
-#popup > li:hover{	
-    background-color: #6bd4e6;	
+
+/* Popup */
+#popup{
+    background-color: #EFF0F1;
+    margin: 0px;
+    padding: 0px;
+    font-size: 12px;
+    border: 1px solid #C0C2C4;
+    z-index: 999999;
+    position: absolute;
+    list-style:none;
+}
+
+#popup li{
+    position: relative;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#popup > li:hover{
+    background-color: #6bd4e6;
 }
 
 .popup-disabled{
@@ -195,11 +202,10 @@ li .hr{
 .popup-disabled:hover{
     background-color: transparent !important;
 }
-    
-    
-/* Webapp Index layout */	
-#sidebar{	
-    background-color: transparent;	
+
+/* Webapp Index layout */
+#sidebar{
+    background-color: transparent;
     min-width: 200px;
     max-width: 200px;
     margin: 0px;
@@ -209,30 +215,29 @@ li .hr{
 
 #windows{
     max-height: 100vh !important;
-    max-width: 90vw !important;
+    max-width: 100vw !important;
 }
 
 #canvas-content{	
     height: 70%;	
-    overflow-y: scroll;
-    overflow-x: auto;
+    overflow: auto;
     border-top-width: 0ch;
 }
 
-#canvas-content > .card-body{	
-    display: flex !important;	
+#canvas-content > .card-body{
+    display: flex !important;
 }
 
 #canvas-container{
     min-height: 100%;
     flex-direction: row;
-}	
+}
 
 #console_controls{
     background-color: transparent;
 }
 
-#console-window{	
+#console-window{
     background-color: transparent;
     max-height: 30%;
 }
@@ -241,17 +246,16 @@ li .hr{
     flex-basis: 100%;
     background-color: #f6f6f6;
     border-right: 2px solid #858688;
-}	
+}
 
 .patch_window_svg{
     background-color: #f6f6f6;
-    min-height: 100%;
     overflow: visible;
     margin-top: 35px;
+    cursor: pointer;
 }	
     
 .patch_window_svg > svg{
-    min-height: 100%;
     position: relative;	
     margin-top: -1px;	
     margin-left: -1px;	
@@ -259,7 +263,6 @@ li .hr{
 }	
 
 .patch-holder{
-    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
@@ -271,19 +274,16 @@ li .hr{
 #div-svg-p{	
     position: relative;	
     z-index: 999999;	
-}	
+}
 
-
-.dsp_toggle{
-    margin-left: 20px;
+#sidebar-body {
+    overflow: auto;
 }
 
 /* Bootstrap */	
 .container-fluid{	
     background-color: transparent;
-    padding: 0px !important;	
-    overflow: scroll;
-    overflow: hidden;
+    padding: 0px !important;
 }
 
 .card-body{
@@ -303,4 +303,5 @@ li .hr{
 #reload-i{
     font-size: 1em !important;
     cursor: pointer;
+    transition: transform 1s linear;
 }

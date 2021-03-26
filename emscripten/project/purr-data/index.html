@@ -7,7 +7,8 @@
     <meta name="description" content="Purr Data compiled for web with Emscripten" />
     <meta name="keywords" content="purr-data" />
     <meta name="generator" content="emsripten" />
-
+	
+	<link rel="shortcut icon" type="image/jpg" href="./purr.png"/>
     <link rel="stylesheet" type="text/css" href="./css/dejavu.css" />
     <link id="page_style" rel="stylesheet" type="text/css" href="./css/default.css" />
     <link rel="stylesheet" type="text/css" href="./css/webapp/webapp.css" />
@@ -37,11 +38,11 @@
       <div class="d-flex content-webapp" id="content">
         <!-- Sidebar -->
 
-        <div class="card" id="sidebar">
+        <div class="card collapse show" id="sidebar">
           <div class="card-body text-center" id="sidebar-body">
             <!-- Pd logo -->
             <div id="pd-info">
-              <img src="https://agraef.github.io/purr-data-intro/purr.png" alt="purr-data-logo" />
+              <img src="./purr.png" alt="purr-data-logo" />
               <h4>Purr Data</h4>
             </div>
             <hr />
@@ -51,7 +52,7 @@
             <div class="d-flex ml-3">
               <i class="fa fa fa-volume-up text-primary" aria-hidden="true"></i>
               <h5>DSP</h5>
-              <label class="dsp_toggle">
+              <label class="dsp_toggle align-self-center ml-5">
                 <input type="checkbox" id="dsp_control" name="dsp_control" value="on" />
                 <span></span>
               </label>
@@ -59,21 +60,27 @@
             <hr />
             <!-- Files section -->
             <div>
-              <div class="d-flex ml-3">
-                <i class="fa fa-folder-open-o text-primary" aria-hidden="true"></i>
-                <h5>Files</h5>
-                <i class="fa fa-refresh ml-auto mt-1 text-primary" id="reload-i" aria-hidden="true" onclick="pdbundle.pdgui.update_file_ls()"></i>
+              <div>
+                <div class="d-flex ml-3 float-left">
+                  <i class="fa fa-folder-open-o text-primary" aria-hidden="true"></i>
+                  <h5>Files</h5>
+                </div>
+                <i class="fa fa-refresh ml-5 mt-1 text-primary inline-block" id="reload-i" aria-hidden="true" onclick="pdbundle.pdgui.update_file_ls()"></i>
               </div>
-
+              
               <div class="text-left" id="sidebar-files">
-                <ul id="file_ls"></ul>
+                <ul class="ml-3 mt-2" id="file_ls"></ul>
                 <div class="text-secondary text-center" id="file_ls_empty">
-                  <p>No files found yet</p>
+                  <p><i>No files found yet</i></p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+		<a id="sidebar-collapse" class="m-2" data-toggle="collapse" data-target="#sidebar">
+			<i class="fa fa-angle-double-left"></i>
+		</a>
 
         <!-- Canvas/Pd Windows -->
         <div class="d-flex flex-column flex-fill" id="windows">
@@ -92,7 +99,7 @@
               <div class="console-find-webapp" id="console_find" style="display: none;">
                 <div class="d-flex justify-content-end">
                   <label><input type="text" id="console_find_text" name="console_find_text" defaultValue="Search in Console" style="width: 10em;" placeholder="Search in Console" /> </label>
-                  <label class="highlight-find">
+                  <label class="highlight-find align-self-center" style = "color: #6c757d">
                     Highlight All
                     <input type="checkbox" id="console_find_highlight" name="console_find_highlight" onchange="console_find_highlight_all(this);" />
                   </label>
@@ -103,7 +110,7 @@
             <div class="collapse show" id="console_bottom">
               <div class="card-block">
                 <div id="printout">
-                  <pre id="p1" style="white-space: pre-wrap;"></pre>
+                  <pre id="p1" style="white-space: pre-wrap; overflow: hidden;"></pre>
                 </div>
               </div>
             </div>
@@ -535,7 +542,25 @@
       $(document).ready(function () {
         $("#loading-modal").modal("show", { backdrop: "static", keyboard: false });
       });
+
+      var counter = 0;
+      $('#reload-i').click(function () {
+
+      counter += 360;
+      $('#reload-i').css('transform', 'rotate(' + counter + 'deg)')
+      });
     </script>
+
+	<script>
+		$(document).ready(function(){
+			$("#sidebar").on('shown.bs.collapse', function () {
+				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-left").removeClass("fa-angle-double-right")
+			})
+			$("#sidebar").on('hidden.bs.collapse', function () {
+				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-right").removeClass("fa-angle-double-left")
+			})
+		});
+	</script>
 
   </body>
 </html>
