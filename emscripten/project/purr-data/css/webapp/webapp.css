@@ -7,15 +7,8 @@
     overflow-y: scroll;
 }
 
-/** Toggle Console Icon*/
-#close{
-    margin-right: 1rem;
-    margin-left: 1rem;
-}
-
-.rotate{
-    transform: rotate(180deg);
-    transition:0.5s ease all;
+#container {
+    overflow: hidden;
 }
 
 #console_bottom{
@@ -36,6 +29,14 @@
 #canvas_container{
     display: flex !important;
     background-color: red !important;
+}
+
+#sidebar-collapse{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 5;
+    color: #007BFF;
 }
 
 #sidebar-files ul{
@@ -218,10 +219,9 @@ li .hr{
     max-width: 100vw !important;
 }
 
-#canvas-content{
-    height: 70%;
-    overflow-y: scroll;
-    overflow-x: auto;
+#canvas-content{	
+    height: 70%;	
+    overflow: auto;
     border-top-width: 0ch;
 }
 
@@ -251,21 +251,19 @@ li .hr{
 
 .patch_window_svg{
     background-color: #f6f6f6;
-    min-height: 100%;
     overflow: visible;
     margin-top: 35px;
-}
-
+    cursor: pointer;
+}	
+    
 .patch_window_svg > svg{
-    min-height: 100%;
-    position: relative;
-    margin-top: -1px;
-    margin-left: -1px;
-    overflow: visible;
-}
+    position: relative;	
+    margin-top: -1px;	
+    margin-left: -1px;	
+    overflow: visible;	
+}	
 
 .patch-holder{
-    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
@@ -274,22 +272,17 @@ li .hr{
     margin-bottom: 5px;
 }
 
-#div-svg-p{
-    position: relative;
-    z-index: 999999;
+#div-svg-p{	
+    position: relative;	
+    z-index: 999999;	
 }
 
-.dsp_toggle{
-   
-    display: flex;
-    float: right;
-    justify-content: flex-end;
-    min-width: 60%;
-    margin-left: 15px;
+#sidebar-body {
+    overflow: auto;
 }
 
-/* Bootstrap */
-.container-fluid{
+/* Bootstrap */	
+.container-fluid{	
     background-color: transparent;
     padding: 0px !important;
 }
@@ -311,4 +304,5 @@ li .hr{
 #reload-i{
     font-size: 1em !important;
     cursor: pointer;
+    transition: transform 1s linear;
 }
