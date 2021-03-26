@@ -105,12 +105,13 @@
                   </label>
                 </div>
               </div>
+                <i class='fa fa-trash ml-3 text-primary' style='cursor:pointer' id='clear'></i>
             </div>
 
             <div class="collapse show" id="console_bottom">
               <div class="card-block">
                 <div id="printout">
-                  <pre id="p1" style="white-space: pre-wrap; overflow: hidden;"></pre>
+                  <pre id="p1" class='ml-2' style="white-space: pre-wrap; overflow: hidden;"></pre>
                 </div>
               </div>
             </div>
@@ -500,6 +501,12 @@
       };
 
       // Add pd module to pd
+
+      //Clear Console
+      document.getElementById("clear").addEventListener("click",()=>{
+        document.getElementById('p1').innerHTML='<p>Console Cleared</p>';
+  
+      })
     </script>
 
     <!-- Pd Bundle -->
