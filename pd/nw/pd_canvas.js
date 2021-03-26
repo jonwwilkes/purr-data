@@ -863,7 +863,7 @@ var canvas_events = (function() {
                 canvas_content.addEventListener("scroll", events.window_recalculate, false);
 
                 var patches = document.getElementsByClassName("patch");
-                for (var i = 0; i < elements.length; i++) {
+                for (var i = 0; i < patches.length; i++) {
                     patches[i].addEventListener("scroll", events.window_recalculate, false);
                 }
 
