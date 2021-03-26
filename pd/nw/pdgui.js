@@ -2119,7 +2119,8 @@ function update_file_ls(){
             // Add open button
             a.onclick = function(){open_patch(file)};
             li.append(a);
-            li.classList.add("d-inline-block text-truncate");
+            li.classList.add("d-inline-block");
+            li.classList.add("text-truncate");
             li.style.maxWidth = "150px";
             file_ls.append(li);
             files_added = files_added + 1;
