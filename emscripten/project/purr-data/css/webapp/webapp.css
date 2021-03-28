@@ -184,6 +184,7 @@ li .hr{
     z-index: 999999;
     position: absolute;
     list-style:none;
+    border-radius: 4px;
 }
 
 #popup li{
