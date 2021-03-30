@@ -219,9 +219,7 @@ li .hr{
 }
 
 #canvas-content{	
-    height: 70%;	
-    overflow: auto;
-    border-top-width: 0ch;
+    height: 70%;
 }
 
 #canvas-content > .card-body{
@@ -245,8 +243,9 @@ li .hr{
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
-    border-right: 2px solid #858688;
-}
+    border-right: 2px solid hsl(220, 1%, 53%);
+    overflow: auto;
+}	
 
 .patch_window_svg{
     background-color: #f6f6f6;
