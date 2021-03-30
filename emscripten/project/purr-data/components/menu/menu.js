@@ -661,11 +661,16 @@ window.key = function (menu_item, shortkey) {
 }
 
 window.modifiers = function (menu_item, modifiers) {
-    var shortkey = modifiers + "+" + tmp_key;
+    var shortkey;
+    if (modifiers) {
+        shortkey = modifiers + "+" + tmp_key;
+    } else {
+        shortkey = tmp_key;
+    }
     window.shortkeys[[tmp_cid]][[shortkey]] = menu_item;
 
     var span = document.createElement("span");
-    span.append(shortkey)
+    span.append(shortkey);
     menu_item.append(span);
 }
 
