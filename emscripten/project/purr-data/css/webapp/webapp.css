@@ -21,6 +21,13 @@
     background-color: transparent !important;
     right: 0px;
 }
+
+/** Rotate */
+.rotate{
+    transform: rotate(180deg);
+    transition:0.5s ease all;
+}
+
 .highlight-find{
     margin-left: 10px;
 }
