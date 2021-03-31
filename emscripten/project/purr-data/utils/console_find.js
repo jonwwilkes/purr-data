@@ -111,7 +111,12 @@ var console_find_traverse = (function () {
                 // adjust the scrollbar to make sure the element is visible,
                 // but only if necessary.
                 // I don't think this is available on all browsers...
-                elements[i].scrollIntoViewIfNeeded();
+                var isFirefox = typeof InstallTrigger !== 'undefined'; // checks if browser is Firefox or not
+                if (isFirefox) {
+                    elements[i].scrollIntoView();
+                } else {
+                    elements[i].scrollIntoViewIfNeeded();
+                }
                 count++;
             }
         },
