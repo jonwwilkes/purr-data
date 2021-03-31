@@ -862,6 +862,11 @@ var canvas_events = (function() {
                 var canvas_content = document.getElementById("canvas-content");
                 canvas_content.addEventListener("scroll", events.window_recalculate, false);
 
+                var patches = document.getElementsByClassName("patch");
+                for (var i = 0; i < patches.length; i++) {
+                    patches[i].addEventListener("scroll", events.window_recalculate, false);
+                }
+
                 // Add listeners to keyevents
                 document.addEventListener("keydown", events.keydown, false);
                 document.addEventListener("keyup", events.keyup, false);
