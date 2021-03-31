@@ -259,9 +259,11 @@ li .hr{
     overflow: visible;
     margin-top: 35px;
     cursor: pointer;
+    min-height: 100%;
 }	
     
 .patch_window_svg > svg{
+    min-height: 100%;
     position: relative;	
     margin-top: -1px;	
     margin-left: -1px;	
@@ -269,6 +271,7 @@ li .hr{
 }	
 
 .patch-holder{
+    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
