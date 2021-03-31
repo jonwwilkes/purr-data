@@ -14,13 +14,18 @@ function menu_section_click(id) {
 
     // Show the current menu options
     var m_option = document.getElementById(id);
+    if (m_option.isClickedAgain) {
+        m_option.isClickedAgain = false;
+    } else {
+        m_option.isClickedAgain = true;
+    }
     m_option.querySelectorAll("ul")[0].style.width = "40px";
     m_option.querySelectorAll("ul")[0].style.position = "fixed";
     m_option.querySelectorAll("ul")[0].style.display = "block";
 
     // Listen to clicks on the page so can close the menu
     document.onclick = function (e) {
-        if (e.target.id !== id) {
+        if (e.target.id !== id || !document.getElementById(id).isClickedAgain) {
             m_option.querySelectorAll("ul")[0].style.display = "none";
             prev_menu_clicked = undefined;
         }
@@ -661,11 +666,16 @@ window.key = function (menu_item, shortkey) {
 }
 
 window.modifiers = function (menu_item, modifiers) {
-    var shortkey = modifiers + "+" + tmp_key;
+    var shortkey;
+    if (modifiers) {
+        shortkey = modifiers + "+" + tmp_key;
+    } else {
+        shortkey = tmp_key;
+    }
     window.shortkeys[[tmp_cid]][[shortkey]] = menu_item;
 
     var span = document.createElement("span");
-    span.append(shortkey)
+    span.append(shortkey);
     menu_item.append(span);
 }
 
