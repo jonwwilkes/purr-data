@@ -90,27 +90,31 @@
           </div>
 
           <!-- Console window -->
-          <div class="card" id="console-window">
+          <div class="card d-flex justify-content-between" id="console-window">
             <div class="card-header d-flex justify-content-between">
-              <h5>
-                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom">Console</a>
+              <h5 class='h-100 w-25' onclick="rotate()">
+                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="d-flex align-items-center text-dark">Console
+                  <i class="ml-2 fa fa-angle-double-down text-primary"S id="open-icon"></i>
+                </a>
+              
               </h5>
 
               <div class="console-find-webapp" id="console_find" style="display: none;">
                 <div class="d-flex justify-content-end">
-                  <label><input type="text" id="console_find_text" name="console_find_text" defaultValue="Search in Console" style="width: 10em;" placeholder="Search in Console" /> </label>
+                  <label><input type="text" id="console_find_text" name="console_find_text" defaultValue="Search in Console" style="width: 15em;" placeholder="Search in Console" /> </label>
                   <label class="highlight-find align-self-center" style = "color: #6c757d">
                     Highlight All
                     <input type="checkbox" id="console_find_highlight" name="console_find_highlight" onchange="console_find_highlight_all(this);" />
                   </label>
                 </div>
               </div>
+                <i class='fa fa-trash ml-3 text-primary' style='cursor:pointer' id='clear' data-toggle="tooltip" title="Clear Console"></i>
             </div>
 
             <div class="collapse show" id="console_bottom">
               <div class="card-block">
                 <div id="printout">
-                  <pre id="p1" style="white-space: pre-wrap; overflow: hidden;"></pre>
+                  <pre id="p1" class='ml-2' style="white-space: pre-wrap; overflow: hidden;"></pre>
                 </div>
               </div>
             </div>
@@ -498,8 +502,20 @@
           }
         },
       };
+    //Rotate Icon
+    function rotate() {
+      var icon = document.getElementById("open-icon");
+      icon.classList.toggle("rotate");
+    }
+
 
       // Add pd module to pd
+
+      //Clear Console
+      document.getElementById("clear").addEventListener("click",()=>{
+        document.getElementById('p1').innerHTML='';
+  
+      })
     </script>
 
     <!-- Pd Bundle -->

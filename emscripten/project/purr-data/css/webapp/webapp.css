@@ -21,6 +21,13 @@
     background-color: transparent !important;
     right: 0px;
 }
+
+/** Rotate */
+.rotate{
+    transform: rotate(180deg);
+    transition:0.5s ease all;
+}
+
 .highlight-find{
     margin-left: 10px;
 }
@@ -97,7 +104,7 @@ nav {
     font-size: 14px;
     width: 100%;
     border: 1px solid #C0C2C4;
-    z-index: 999999;
+    z-index: 1000000;
 }
 
 .menu li{
@@ -184,6 +191,7 @@ li .hr{
     z-index: 999999;
     position: absolute;
     list-style:none;
+    box-shadow: 0 4px 8px 0 rgba(49, 49, 49, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.14);
 }
 
 #popup li{
@@ -219,9 +227,7 @@ li .hr{
 }
 
 #canvas-content{	
-    height: 70%;	
-    overflow: auto;
-    border-top-width: 0ch;
+    height: 70%;
 }
 
 #canvas-content > .card-body{
@@ -242,20 +248,27 @@ li .hr{
     max-height: 30%;
 }
 
+#console-window a{
+    text-decoration: none;
+}
+
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
-    border-right: 2px solid #858688;
-}
+    border-right: 2px solid hsl(220, 1%, 53%);
+    overflow: auto;
+}	
 
 .patch_window_svg{
     background-color: #f6f6f6;
     overflow: visible;
     margin-top: 35px;
     cursor: pointer;
+    min-height: 100%;
 }	
     
 .patch_window_svg > svg{
+    min-height: 100%;
     position: relative;	
     margin-top: -1px;	
     margin-left: -1px;	
@@ -263,6 +276,7 @@ li .hr{
 }	
 
 .patch-holder{
+    height: 100%;
     font-family: Dejavu Sans Mono !important;
 }
 
