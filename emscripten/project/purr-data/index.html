@@ -578,5 +578,16 @@
 		});
 	</script>
 
+  <script>
+    $(document).ready(function(){
+      $(document).click(function(){
+        var popup = document.getElementById("popup");
+        if (popup) {
+          popup.parentNode.removeChild(popup);
+        }
+      });
+    });
+  </script>
+
   </body>
 </html>
