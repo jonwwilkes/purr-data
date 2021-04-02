@@ -43,6 +43,7 @@
     left: 0px;
     z-index: 5;
     color: #007BFF;
+    cursor: pointer;
 }
 
 #sidebar-files ul{
