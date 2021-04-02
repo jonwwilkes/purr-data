@@ -94,7 +94,7 @@
             <div class="card-header d-flex justify-content-between">
               <h5 class='h-100 w-25' onclick="rotate()">
                 <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="d-flex align-items-center text-dark">Console
-                  <i class="ml-2 fa fa-angle-double-down text-primary"S id="open-icon"></i>
+                  <i class="ml-2 fa fa-angle-double-down text-primary" id="open-icon"></i>
                 </a>
               
               </h5>
@@ -577,6 +577,17 @@
 			})
 		});
 	</script>
+
+  <script>
+    $(document).ready(function(){
+      $(document).click(function(){
+        var popup = document.getElementById("popup");
+        if (popup) {
+          popup.parentNode.removeChild(popup);
+        }
+      });
+    });
+  </script>
 
   </body>
 </html>

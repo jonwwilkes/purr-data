@@ -112,7 +112,7 @@ exports.menu = {
   "number_web": { key: "3", modifiers: cmd_or_ctrl + "+Alt" },
   "symbol_web": { key: "4", modifiers: cmd_or_ctrl + "+Alt" },
   "comment_web": { key: "5", modifiers: cmd_or_ctrl + "+Alt" },
-  "dropdown_web": { key: "m", modifiers: cmd_or_ctrl + "+Shift+Alt" },
+  "dropdown_web": { key: "M", modifiers: cmd_or_ctrl + "+Shift+Alt" },
   "bang_web": { key: "B", modifiers: cmd_or_ctrl + "+Shift+Alt" },
   "toggle_web": { key: "T", modifiers: cmd_or_ctrl + "+Shift+Alt" },
   "number2_web": { key: "N", modifiers: cmd_or_ctrl + "+Shift+Alt" },
