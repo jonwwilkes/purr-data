@@ -194,6 +194,7 @@ li .hr{
     z-index: 999999;
     position: absolute;
     list-style:none;
+    border-radius: 4px;
     box-shadow: 0 4px 8px 0 rgba(49, 49, 49, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.14);
 }
 
