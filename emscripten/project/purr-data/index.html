@@ -79,7 +79,7 @@
         </div>
 
 		<a id="sidebar-collapse" class="m-2" data-toggle="collapse" data-target="#sidebar">
-			<i class="fa fa-angle-double-left"></i>
+			<i class="fa fa-angle-double-left rotate-transition" onclick="rotate(this)"></i>
 		</a>
 
         <!-- Canvas/Pd Windows -->
@@ -92,9 +92,9 @@
           <!-- Console window -->
           <div class="card d-flex justify-content-between" id="console-window">
             <div class="card-header d-flex justify-content-between">
-              <h5 class='h-100 w-25' onclick="rotate()">
+              <h5 class="h-100 w-25" id= "console-heading" onclick="rotate(this)">
                 <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="d-flex align-items-center text-dark">Console
-                  <i class="ml-2 fa fa-angle-double-down text-primary" id="open-icon"></i>
+                  <i class="ml-2 fa fa-angle-double-down text-primary rotate-transition"S id="open-icon"></i>
                 </a>
               
               </h5>
@@ -502,10 +502,15 @@
           }
         },
       };
+
     //Rotate Icon
-    function rotate() {
-      var icon = document.getElementById("open-icon");
-      icon.classList.toggle("rotate");
+    function rotate(elmnt) {
+      var cons_head = elmnt.id === "console-heading";
+      if (cons_head) {
+        document.getElementById("open-icon").classList.toggle("rotate");
+      } else {
+        elmnt.classList.toggle("rotate");
+      }
     }
 
 
@@ -567,27 +572,16 @@
       });
     </script>
 
-	<script>
-		$(document).ready(function(){
-			$("#sidebar").on('shown.bs.collapse', function () {
-				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-left").removeClass("fa-angle-double-right")
-			})
-			$("#sidebar").on('hidden.bs.collapse', function () {
-				$("#sidebar-collapse").children("i").eq(0).addClass("fa-angle-double-right").removeClass("fa-angle-double-left")
-			})
-		});
-	</script>
-
-  <script>
-    $(document).ready(function(){
-      $(document).click(function(){
-        var popup = document.getElementById("popup");
-        if (popup) {
-          popup.parentNode.removeChild(popup);
-        }
+    <script>
+      $(document).ready(function(){
+        $(document).click(function(){
+          var popup = document.getElementById("popup");
+          if (popup) {
+            popup.parentNode.removeChild(popup);
+          }
+        });
       });
-    });
-  </script>
+    </script>
 
   </body>
 </html>
