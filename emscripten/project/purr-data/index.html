@@ -91,12 +91,10 @@
 
           <!-- Console window -->
           <div class="card d-flex justify-content-between" id="console-window">
-            <div class="card-header d-flex justify-content-between">
-              <h5 class="h-100 w-25" id= "console-heading" onclick="rotate(this)">
-                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="d-flex align-items-center text-dark">Console
-                  <i class="ml-2 fa fa-angle-double-down text-primary rotate-transition"S id="open-icon"></i>
-                </a>
-              
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="h-100 w-25 d-flex align-items-center" id= "console-heading" onclick="rotate(this)">
+                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="text-dark">Console</a>
+                <i class="ml-2 fa fa-angle-double-down text-primary rotate-transition"S id="open-icon"></i>
               </h5>
 
               <div class="console-find-webapp" id="console_find" style="display: none;">
@@ -108,7 +106,8 @@
                   </label>
                 </div>
               </div>
-                <i class='fa fa-trash ml-3 text-primary' style='cursor:pointer' id='clear' data-toggle="tooltip" title="Clear Console"></i>
+
+              <i class='fa fa-trash ml-3 text-primary' style='cursor:pointer' id='clear' data-toggle="tooltip" title="Clear Console"></i>
             </div>
 
             <div class="collapse show" id="console_bottom">
