@@ -93,14 +93,15 @@
           <div class="card d-flex justify-content-between" id="console-window">
             <div class="card-header d-flex justify-content-between align-items-center" id="console-header">
               <h5 class="d-flex align-items-center" id= "console-heading" onclick="rotate(this)">
-                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="text-dark">Console</a>
-                <i class="ml-2 fa fa-angle-double-down text-primary rotate-transition"S id="open-icon"></i>
+                <a data-toggle="collapse" data-parent="#windows" href="#console_bottom" class="text-dark d-flex align-items-center">Console
+                  <i class="ml-2 fa fa-angle-double-down text-primary rotate-transition" id="open-icon"></i>
+                </a>
               </h5>
 
               <div class="console-find-webapp" id="console_find" style="display: none;">
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-end align-items-center">
                   <label><input type="text" id="console_find_text" name="console_find_text" defaultValue="Search in Console" style="width: 15em;" placeholder="Search in Console" /> </label>
-                  <label class="highlight-find align-self-center" style = "color: #6c757d">
+                  <label class="highlight-find" style = "color: #6c757d">
                     Highlight All
                     <input type="checkbox" id="console_find_highlight" name="console_find_highlight" onchange="console_find_highlight_all(this);" />
                   </label>
