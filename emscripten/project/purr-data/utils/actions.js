@@ -93,13 +93,13 @@ function load_menu_actions(){
 
     minit("help-manual", {onclick:
         function(){
-            pdbundle.pdgui.web_pd_doc_open("doc/1.manual", "index.htm")
+            pdbundle.pdgui.web_external_doc_open("https://puredata.info/docs/manuals/")
         }
     });
 
     minit("help-intro", {onclick:
         function(){
-            pdbundle.pdgui.web_pd_doc_open("doc/5.reference", "help-intro.pd")
+            pdbundle.pdgui.web_external_doc_open("http://puredata.info/docs/manuals/pdrefcards/pd-refcard-en.pdf/view")
         }
     });
 
