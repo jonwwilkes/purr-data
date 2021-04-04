@@ -261,6 +261,9 @@ li .hr{
     text-decoration: none;
 }
 
+#console-header {
+    height: 50px;
+}
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
