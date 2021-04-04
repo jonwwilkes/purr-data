@@ -16,7 +16,6 @@ function load_menu_actions(){
     minit("file-open",{onclick: function(){
         // show sidebar
         $("#sidebar").collapse("show");
-        console.log("clicked");
         $("#sidebar-col-icon").removeClass("rotate");
     }});
 
