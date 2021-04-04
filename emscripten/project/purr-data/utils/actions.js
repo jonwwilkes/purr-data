@@ -13,6 +13,12 @@ function load_menu_actions(){
     // File sub-entries
     minit("file-message",{onclick: function(){pdbundle.pdgui.menu_send()}});
 
+    minit("file-open",{onclick: function(){
+        // show sidebar
+        $("#sidebar").collapse("show");
+        $("#sidebar-col-icon").removeClass("rotate");
+    }});
+
     // Edit entries
     minit("edit-copy", {
         onclick: function() {

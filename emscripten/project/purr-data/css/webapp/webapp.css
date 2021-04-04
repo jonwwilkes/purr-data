@@ -28,7 +28,11 @@
 }
 
 .rotate-transition {
-    transition: transform 0.5s linear;
+    transition: transform 0.3s linear;
+}
+
+.collapsing {
+    visibility: hidden;
 }
 
 .highlight-find{
@@ -257,6 +261,9 @@ li .hr{
     text-decoration: none;
 }
 
+#console-header {
+    height: 50px;
+}
 .patch{
     flex-basis: 100%;
     background-color: #f6f6f6;
