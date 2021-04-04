@@ -5738,6 +5738,9 @@ function open_search() {
     } else {
         dialog_raise("search");
     }
+    // show sidebar
+    $("#sidebar").collapse("show");
+    $("#sidebar-col-icon").removeClass("rotate");
 }
 
 exports.open_search= open_search;

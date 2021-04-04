@@ -97,14 +97,6 @@ function load_menu_actions(){
         }
     });
 
-    minit("help-browser", {onclick:
-        function(){
-            // show sidebar
-            $("#sidebar").collapse("show");
-            $("#sidebar-col-icon").removeClass("rotate");
-        }
-    });
-
     minit("help-intro", {onclick:
         function(){
             pdbundle.pdgui.web_external_doc_open("http://puredata.info/docs/manuals/pdrefcards/pd-refcard-en.pdf/view")
