@@ -79,7 +79,7 @@
         </div>
 
 		<a id="sidebar-collapse" class="m-2" data-toggle="collapse" data-target="#sidebar">
-			<i class="fa fa-angle-double-left rotate-transition" onclick="rotate(this)"></i>
+			<i class="fa fa-angle-double-left rotate-transition" id="sidebar-col-icon" onclick="rotate(this)"></i>
 		</a>
 
         <!-- Canvas/Pd Windows -->
@@ -505,11 +505,13 @@
 
     //Rotate Icon
     function rotate(elmnt) {
-      var cons_head = elmnt.id === "console-heading";
-      if (cons_head) {
-        document.getElementById("open-icon").classList.toggle("rotate");
-      } else {
-        elmnt.classList.toggle("rotate");
+      switch (elmnt.id) {
+        case "console-heading":
+          document.getElementById("open-icon").classList.toggle("rotate");
+          break;
+        case "sidebar-col-icon":
+          elmnt.classList.toggle("rotate");
+          break;
       }
     }
 
