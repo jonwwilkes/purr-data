@@ -5728,6 +5728,9 @@ function open_prefs() {
     } else {
         dialog_raise("prefs");
     }
+    // show sidebar
+    $("#sidebar").collapse("show");
+    $("#sidebar-col-icon").removeClass("rotate");
 }
 
 exports.open_prefs = open_prefs;
