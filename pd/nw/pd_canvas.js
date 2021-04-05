@@ -1452,6 +1452,10 @@ function create_popup_menu(name) {
             label: l("canvas.menu.props"),
             click: function() {
                 pdgui.popup_action(name, 0);
+                // show sidebar
+                $("#sidebar").collapse("show");
+                $("#sidebar-col-icon").removeClass("rotate");
+
             }
         },
         open: {
