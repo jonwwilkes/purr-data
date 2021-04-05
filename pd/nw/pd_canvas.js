@@ -2374,6 +2374,9 @@ function load_canvas_menu_actions(name, filename){
                 update_live_box();
                 pdgui.pdsend(name, "dirty 1");
                 pdgui.pdsend(name, "menuarray");
+                // show sidebar
+                $("#sidebar").collapse("show");
+                $("#sidebar-col-icon").removeClass("rotate");
             }
     });
 
