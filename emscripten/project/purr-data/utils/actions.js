@@ -169,8 +169,10 @@ function add_shortcuts(cid){
         // Add key
         shortcut += e.key.toUpperCase();
         if(window.shortkeys[cid].hasOwnProperty(shortcut)){
-            e.preventDefault()         
-            window.shortkeys[cid][shortcut].click();
+            if (shortcut!=="F11") {
+                e.preventDefault();
+                window.shortkeys[cid][shortcut].click();
+            }        
         }
     }
 }
