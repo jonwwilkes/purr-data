@@ -263,6 +263,9 @@ text {
 
 .comment .border {
     fill: none;
+}
+
+svg[id^="patchsvg"].editmode .comment .border {
     stroke: #aaa;
     stroke-dasharray: 3 2;
 }
