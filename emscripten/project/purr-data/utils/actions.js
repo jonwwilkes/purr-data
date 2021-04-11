@@ -72,6 +72,9 @@ function load_menu_actions(){
                 text_container.style.setProperty("bottom", "0px");
                 find_bar.style.setProperty("display", "none");
             }
+             // show sidebar
+            $("#console_bottom").collapse("show");
+            $("#open-icon").removeClass("rotate");
         }
     });
 
