@@ -2119,7 +2119,7 @@ function update_file_ls(){
             // Add open button
             a.onclick = function(){open_patch(file)};
             li.append(a);
-            li.classList.add("d-inline-block");
+            li.classList.add("d-block");
             li.classList.add("text-truncate");
             li.style.maxWidth = "150px";
             file_ls.append(li);
@@ -5728,6 +5728,9 @@ function open_prefs() {
     } else {
         dialog_raise("prefs");
     }
+    // show sidebar
+    $("#sidebar").collapse("show");
+    $("#sidebar-col-icon").removeClass("rotate");
 }
 
 exports.open_prefs = open_prefs;
@@ -5738,6 +5741,9 @@ function open_search() {
     } else {
         dialog_raise("search");
     }
+    // show sidebar
+    $("#sidebar").collapse("show");
+    $("#sidebar-col-icon").removeClass("rotate");
 }
 
 exports.open_search= open_search;

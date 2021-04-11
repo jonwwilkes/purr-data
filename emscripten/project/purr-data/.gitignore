@@ -11,7 +11,7 @@ main.js
 main.wasm
 
 # ignore copied files
-components/dialogs/dialogs_*.html
+components/dialogs/dialog_*.html
 css/*.css
 
 # ignore build files

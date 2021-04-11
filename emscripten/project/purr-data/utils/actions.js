@@ -13,6 +13,12 @@ function load_menu_actions(){
     // File sub-entries
     minit("file-message",{onclick: function(){pdbundle.pdgui.menu_send()}});
 
+    minit("file-open",{onclick: function(){
+        // show sidebar
+        $("#sidebar").collapse("show");
+        $("#sidebar-col-icon").removeClass("rotate");
+    }});
+
     // Edit entries
     minit("edit-copy", {
         onclick: function() {
@@ -66,6 +72,9 @@ function load_menu_actions(){
                 text_container.style.setProperty("bottom", "0px");
                 find_bar.style.setProperty("display", "none");
             }
+             // show sidebar
+            $("#console_bottom").collapse("show");
+            $("#open-icon").removeClass("rotate");
         }
     });
 
