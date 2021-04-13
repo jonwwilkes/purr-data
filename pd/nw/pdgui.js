@@ -1445,10 +1445,47 @@ function create_svg_lock(cid) {
 // the same grid with a lower opacity. That way the edit mode is always
 // visually distinct from run mode.
 var create_editmode_bg = function(cid, svg_elem) {
-    var data, cell_data_str, opacity_str, grid, size, pos;
+    var data, cell_data_str, opacity_str, grid, size, pos,
+        cc, // cell color
+        gc; // grid color
     grid = showgrid[cid];
     size = gridsize[cid];
     pos = get_grid_coords(cid, svg_elem);
+
+        // Annoying crap because SVG img data can't
+        // call into an external style sheet...
+    switch(skin.get()) {
+        case "default":
+        case "footgun":
+        case "vanilla":
+        case "extended":
+        case "solarized":
+            cc = "#ddd";
+            gc = "#bbb";
+            break;
+        case "inverted":
+        case "vanilla_inverted":
+        case "extended_inverted":
+            cc = "#222";
+            gc = "#444";
+            break;
+        case "c64":
+            cc = "#5347b5";
+            gc = "#6458c6";
+            break;
+        case "strongbad":
+            cc = "#222";
+            gc = "#333";
+            break;
+        case "subdued":
+            cc = "#bdc9bd";
+            gc = "#a6c1a6";
+            break;
+        case "solarized_inverted":
+            cc = "#444";
+            gc = "#555";
+            break;
+    }
     // if snap-to-grid isn't turned on, just use cell size of 10 and make the
     // grid partially transparent
     size = grid ? size : 10;
@@ -1461,13 +1498,13 @@ var create_editmode_bg = function(cid, svg_elem) {
               '<defs>',
                 '<pattern id="cell" patternUnits="userSpaceOnUse" ',
                          'width="', size, '" height="', size, '">',
-                  '<path fill="none" stroke="#ddd" stroke-width="1" ',
+                  '<path fill="none" stroke="', cc, '" stroke-width="1" ',
                         'd=', cell_data_str,'/>',
                 '</pattern>',
                 '<pattern id="grid" patternUnits="userSpaceOnUse" ',
                     'width="100" height="100" x="', pos.x, '" y="', pos.y, '">',
                   '<rect width="500" height="500" fill="url(#cell)" />',
-                  '<path fill="none" stroke="#bbb" stroke-width="1" ',
+                  '<path fill="none" stroke="', gc, '" stroke-width="1" ',
                         'd="M 500 0 L 0 0 0 500"/>',
                 '</pattern>',
               '</defs>',
@@ -6333,10 +6370,13 @@ var skin = exports.skin = (function () {
             .setAttribute("href", dir + preset + ".css");
     }
     return {
-        get: function () {
+        debug: function () {
             post("getting preset: " + dir + preset + ".css");
             return dir + preset + ".css";
         },
+        get: function() {
+            return preset;
+	},
         set: function (name) {
             // ag: if the preset doesn't exist (e.g., user preset that
             // has disappeared), just stick to the default
