@@ -46,6 +46,9 @@ function load_menu_actions(){
                 window.getSelection().empty();
                 window.getSelection().addRange(range);
             }
+            // show sidebar
+            $("#console_bottom").collapse("show");
+            $("#open-icon").removeClass("rotate");
         }
     });
 
