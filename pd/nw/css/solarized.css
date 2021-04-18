@@ -74,16 +74,16 @@ body {
 
 /* marks for matches to console_find */
 mark {
-    background: #eee8d5;
+    background: #eee8d5 !important;
 }
 
 mark.console_find_current.console_find_highlighted,
 mark.console_find_current {
-    background: #b58900;
+    background: #b58900 !important;
 }
 
 mark.console_find_highlighted {
-    background: #6bd4e6;
+    background: #6bd4e6 !important;
 }
 
 #console_find {
