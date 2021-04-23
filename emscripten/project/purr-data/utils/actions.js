@@ -183,6 +183,7 @@ function add_shortcuts(cid){
         if(window.shortkeys[cid].hasOwnProperty(shortcut)){
             switch(shortcut) {
                 case "Ctrl+0":
+                case "Ctrl+=":
                     break;
                 case "F11":
                     break;
