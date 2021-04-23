@@ -182,8 +182,8 @@ function add_shortcuts(cid){
         shortcut += e.key.toUpperCase();
         if(window.shortkeys[cid].hasOwnProperty(shortcut)){
             switch(shortcut) {
+                case "Ctrl+=":
                 case "Ctrl+-":
-                    break;
                 case "F11":
                     break;
                 default:
