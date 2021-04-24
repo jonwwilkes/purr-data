@@ -390,11 +390,6 @@ svg[id^="patchsvg"].editmode .comment .border {
     stroke-dasharray: 3 2;
 }
 
-#patchsvg.editmode .comment .border {
-    stroke: #aaa;
-    stroke-dasharray: 3 2;
-}
-
 /* A little hack for special case of [cnv].
    All other iemguis have a black border, but
    [cnv] sets its selection rectangle to the

@@ -283,11 +283,6 @@ text {
 }
 
 svg[id^="patchsvg"].editmode .comment .border {
-    stroke: #aaa;
-    stroke-dasharray: 3 2;
-}
-
-#patchsvg.editmode .comment .border {
     stroke: #475d64;
     stroke-dasharray: 8 4;
 }
