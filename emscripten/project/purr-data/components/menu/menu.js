@@ -110,12 +110,6 @@ function menu_options(type, w, cid) {
         },
 
         // View entries
-        "view-zoomout": {
-            label: l("menu.zoomout"),
-            key: pdbundle.shortcuts.menu.zoomout_web.key,
-            modifiers: pdbundle.shortcuts.menu.zoomout_web.modifiers,
-            tooltip: l("menu.zoomout_tt")
-        },
         "view-fullscreen": {
             label: l("menu.fullscreen"),
             key: pdbundle.shortcuts.menu.fullscreen_web.key,
@@ -435,6 +429,12 @@ function menu_options(type, w, cid) {
             key: pdbundle.shortcuts.menu.zoomin_web.key,
             modifiers: pdbundle.shortcuts.menu.zoomin_web.modifiers,
             tooltip: l("menu.zoomin_tt")
+        },
+        "view-zoomout": {
+            label: l("menu.zoomout"),
+            key: pdbundle.shortcuts.menu.zoomout_web.key,
+            modifiers: pdbundle.shortcuts.menu.zoomout_web.modifiers,
+            tooltip: l("menu.zoomout_tt")
         },
         ...view_base,
 

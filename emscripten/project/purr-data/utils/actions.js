@@ -184,7 +184,7 @@ function add_shortcuts(cid){
             switch(shortcut) {
                 case "Ctrl+0":
                 case "Ctrl+=":
-                    break;
+                case "Ctrl+-":
                 case "F11":
                     break;
                 default:
