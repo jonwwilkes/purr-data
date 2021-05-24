@@ -68,6 +68,15 @@
     color: #007BFF;
 }
 
+#file-icons {
+    display: none;
+}
+
+#list-item:hover > div {
+    display: flex;
+    display: inline-block;
+}
+
 #content {
     position: relative;
 }
@@ -335,3 +344,4 @@ li .hr{
     cursor: pointer;
     transition: transform 1s linear;
 }
+
