@@ -2140,7 +2140,7 @@ function update_file_ls(){
             list_item.classList.add("d-flex", "justify-content-between");
             list_item.setAttribute("id", "list-item");
             // Add name of file
-            a.append("./"+file);
+            a.append(file);
     
             // Add open button
             a.onclick = function(){open_patch(file)};
@@ -2148,7 +2148,6 @@ function update_file_ls(){
             edit_icon.onclick = function(){edit_file_name(file)};
             li.append(a);
             li.classList.add("d-inline-block", "text-truncate");
-            li.style.maxWidth = "75px";
 
             //append elements
             list_item.append(li);

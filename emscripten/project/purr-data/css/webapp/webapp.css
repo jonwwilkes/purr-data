@@ -77,6 +77,14 @@
     display: inline-block;
 }
 
+#list-item > li {
+    max-width: 150px;
+}
+
+#list-item:hover > li {
+    max-width: 75px;
+}
+
 #content {
     position: relative;
 }
