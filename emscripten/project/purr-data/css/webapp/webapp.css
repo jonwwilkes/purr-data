@@ -68,6 +68,23 @@
     color: #007BFF;
 }
 
+#file-icons {
+    display: none;
+}
+
+#list-item:hover > div {
+    display: flex;
+    display: inline-block;
+}
+
+#list-item > li {
+    max-width: 150px;
+}
+
+#list-item:hover > li {
+    max-width: 75px;
+}
+
 #content {
     position: relative;
 }
@@ -335,3 +352,4 @@ li .hr{
     cursor: pointer;
     transition: transform 1s linear;
 }
+

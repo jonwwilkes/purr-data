@@ -2103,6 +2103,23 @@ function download_patch(file_name) {
 
 exports.download_patch = download_patch;
 
+function delete_file(file_name) {
+    FS.unlink(workspace+file_name, function(err) {
+        console.log(err);
+    });
+    update_file_ls();
+}
+
+function edit_file_name(file_name) {
+    var new_name = prompt("Enter new file name", file_name);  
+    if (new_name != null) {
+        FS.rename(workspace+file_name, workspace+new_name, function(err) {
+            console.log(err);
+        });
+        update_file_ls();
+    }
+}
+
 function update_file_ls(){
     var file_ls = window.document.getElementById("file_ls");
     file_ls.innerHTML = "";
@@ -2111,18 +2128,33 @@ function update_file_ls(){
     for (const file of FS.readdir(workspace)){
         var mode = FS.stat(workspace+file).mode;
         if(FS.isFile(mode)){
+            var list_item = window.document.createElement("div");
+            var icons = window.document.createElement("div");
             var li = window.document.createElement("li");
             var a = window.document.createElement("a");
+            var edit_icon = window.document.createElement("i");
+            edit_icon.classList.add("fa", "fa-pencil", "text-primary", "edit");
+            var trash_icon = window.document.createElement("i");
+            trash_icon.classList.add("fa", "fa-trash", "text-primary", "delete");
+            icons.setAttribute("id", "file-icons");
+            list_item.classList.add("d-flex", "justify-content-between");
+            list_item.setAttribute("id", "list-item");
             // Add name of file
-            a.append("./"+file);
+            a.append(file);
     
             // Add open button
             a.onclick = function(){open_patch(file)};
+            trash_icon.onclick = function(){delete_file(file)};
+            edit_icon.onclick = function(){edit_file_name(file)};
             li.append(a);
-            li.classList.add("d-block");
-            li.classList.add("text-truncate");
-            li.style.maxWidth = "150px";
-            file_ls.append(li);
+            li.classList.add("d-inline-block", "text-truncate");
+
+            //append elements
+            list_item.append(li);
+            icons.append(edit_icon);
+            icons.append(trash_icon);
+            list_item.append(icons);
+            file_ls.append(list_item);
             files_added = files_added + 1;
         }
     }
